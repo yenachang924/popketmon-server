@@ -69,14 +69,14 @@
 
   /* KETMON: steady magenta neon (original project vibe) */
   .t-ket{color:var(--magenta);
-    text-shadow:0 0 8px rgba(226,59,255,.85), 0 0 26px rgba(123,44,255,.65), 0 0 40px rgba(226,59,255,.35)}
+    text-shadow:0 0 10px rgba(226,59,255,.95), 0 0 32px rgba(123,44,255,.78), 0 0 52px rgba(226,59,255,.48)}
 
   /* POP: white, high-energy POPcat-style glitch */
   .t-pop{color:#fff;
-    text-shadow:0 0 8px rgba(255,255,255,.95), 0 0 22px rgba(226,59,255,.55);
+    text-shadow:0 0 10px rgba(255,255,255,1), 0 0 28px rgba(226,59,255,.72), 0 0 46px rgba(123,44,255,.42);
     animation:popTwitch .26s steps(2) infinite}
   .t-pop::before,.t-pop::after{content:attr(data-text); position:absolute; inset:0; pointer-events:none}
-  .t-pop::before{color:#fff; text-shadow:0 0 6px #fff;
+  .t-pop::before{color:#fff; text-shadow:0 0 9px #fff;
     animation:popWhite 1.1s steps(1) infinite}                 /* white glitch */
   .t-pop::after{color:var(--magenta-2); opacity:.9;
     animation:popChroma .9s steps(1) infinite}                 /* chromatic energy */
@@ -110,7 +110,7 @@
     display:inline-block; color:var(--yellow); font-size:1.3em; line-height:1;
     transform:rotate(12deg); transform-origin:50% 75%;
     margin:0 .04em 0 .02em;
-    text-shadow:0 0 10px rgba(255,230,0,.95), 0 0 28px rgba(255,230,0,.55), 0 0 44px rgba(226,59,255,.4);
+    text-shadow:0 0 12px rgba(255,230,0,1), 0 0 34px rgba(255,230,0,.68), 0 0 56px rgba(226,59,255,.52);
     animation:bigPbob 2.6s ease-in-out infinite;
   }
   @keyframes bigPbob{50%{transform:rotate(12deg) translateY(-4px)}}
@@ -118,7 +118,7 @@
   /* pokeball (master-ball look) sitting in place of the O */
   .t-ball{display:inline-block; width:.92em; height:.92em; vertical-align:-.14em; margin:0 .01em}
   .t-ball::before{content:""; position:absolute; inset:16%; border-radius:50%;
-    box-shadow:0 0 12px 5px rgba(226,59,255,.55),0 0 20px 8px rgba(255,230,0,.18);
+    box-shadow:0 0 19px 9px rgba(226,59,255,.88),0 0 36px 15px rgba(255,230,0,.4);
     pointer-events:none}
   @keyframes ballSpin{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
   .t-ball svg{position:relative; width:100%; height:100%; display:block;
@@ -191,24 +191,20 @@
   .charge-bright{position:absolute; top:0; left:0; height:100%; width:var(--barw)}
   .energy{position:absolute; inset:0;
     background:linear-gradient(90deg, var(--purple), var(--magenta) 45%, var(--magenta-2) 70%, var(--yellow));
-    opacity:.9; overflow:hidden; isolation:isolate;
+    background-size:200% 100%; animation:flow 1.1s linear infinite; opacity:.9;
     box-shadow:inset 0 0 18px rgba(255,230,0,.4)}
-  .energy::before{content:""; position:absolute; inset:0 auto 0 -100%; width:200%;
-    background:linear-gradient(90deg, var(--purple), var(--magenta) 22.5%, var(--magenta-2) 35%, var(--yellow) 50%,
-      var(--purple) 50%, var(--magenta) 72.5%, var(--magenta-2) 85%, var(--yellow));
-    animation:energyFlow 1.1s linear infinite; will-change:transform;
-    transform:translate3d(0,0,0); backface-visibility:hidden}
-  @keyframes energyFlow{to{transform:translate3d(50%,0,0)}}
-  .bolt-bright{position:absolute; inset:0; width:100%; height:100%;
-    animation:chargeCrackle .5s steps(2) infinite; will-change:opacity}
+  @keyframes flow{to{background-position:-200% 0}}
+  .bolt-bright{position:absolute; inset:0; width:100%; height:100%}
   .bolt-bright .glow{fill:none; stroke:var(--magenta-2); stroke-width:5; opacity:.5;
-    filter:drop-shadow(0 0 6px var(--magenta))}
+    filter:drop-shadow(0 0 6px var(--magenta)); animation:crackle .25s steps(2) infinite}
   .bolt-bright .core{fill:none; stroke:var(--yellow); stroke-width:2.4; stroke-linecap:round;
-    stroke-dasharray:14 7; filter:drop-shadow(0 0 5px var(--yellow))}
-  @keyframes chargeCrackle{50%{opacity:.62}}
+    stroke-dasharray:14 7; filter:drop-shadow(0 0 5px var(--yellow));
+    animation:flowD .5s linear infinite, crackle .22s steps(2) infinite}
+  @keyframes flowD{to{stroke-dashoffset:-210}}
+  @keyframes crackle{0%{opacity:1}50%{opacity:.5}100%{opacity:.85}}
   .bolt-tip{position:absolute; top:50%; left:0; transform:translate(-50%,-50%) scale(0);
     font-size:1.3rem; filter:drop-shadow(0 0 8px var(--yellow));
-    transition:left .25s var(--ease); animation:tipFlick .36s steps(2) infinite; will-change:opacity}
+    transition:left .25s var(--ease); animation:tipFlick .18s steps(2) infinite}
   .bolt-tip.on{transform:translate(-50%,-50%) scale(1)}
   @keyframes tipFlick{50%{opacity:.6}}
   .next-label{font-size:.58rem; color:var(--muted); letter-spacing:2px; margin-top:8px}
