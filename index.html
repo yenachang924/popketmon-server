@@ -102,6 +102,27 @@
     78%{clip-path:inset(34% 0 40% 0);transform:translate(-4px,1px)}
     82%{clip-path:inset(100% 0 0 0)}}
   .subtitle{font-size:.62rem; letter-spacing:5px; color:var(--muted); margin-top:8px}
+  .credit{font-size:.52rem; letter-spacing:3px; color:#fff; opacity:.6; margin-top:5px; font-weight:400}
+
+  /* 3rd letter P: lemon, larger, tilted 12deg — the standout accent */
+  .t-bigP{
+    display:inline-block; color:var(--yellow); font-size:1.3em; line-height:1;
+    transform:rotate(12deg); transform-origin:50% 75%;
+    margin:0 .04em 0 .02em;
+    text-shadow:0 0 10px rgba(255,230,0,.95), 0 0 28px rgba(255,230,0,.55), 0 0 44px rgba(226,59,255,.4);
+    animation:bigPbob 2.6s ease-in-out infinite;
+  }
+  @keyframes bigPbob{50%{transform:rotate(12deg) translateY(-4px)}}
+
+  /* lemon glow halo over the whole wordmark for the "lemon point" feel */
+  .title{filter:drop-shadow(0 0 18px rgba(255,230,0,.12))}
+
+  /* pokeball (master-ball look) sitting in place of the O */
+  .t-ball{display:inline-block; width:.92em; height:.92em; vertical-align:-.14em; margin:0 .01em;
+    filter:drop-shadow(0 0 10px rgba(226,59,255,.7)) drop-shadow(0 0 18px rgba(255,230,0,.25));
+    animation:ballSpin 6s ease-in-out infinite}
+  @keyframes ballSpin{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+  .t-ball svg{width:100%; height:100%; display:block}
 
   .name-row{display:flex; gap:8px; margin:18px 0 4px}
   .name-row input{padding:9px 14px; border:1.5px solid var(--line); border-radius:10px;
@@ -227,8 +248,9 @@
 </div>
 <div class="scan"></div>
 <div class="stage">
-  <h1 class="title"><span class="t-pop" data-text="POP">POP</span><span class="t-ket">KEMON</span></h1>
+  <h1 class="title" aria-label="POPKEMON"><span class="t-pop" data-text="PO">PO</span><span class="t-bigP">P</span><span class="t-ket">KEM</span><span class="t-ball" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="ballClip"><circle cx="50" cy="50" r="47"/></clipPath></defs><g clip-path="url(#ballClip)"><rect x="0" y="50" width="100" height="50" fill="#f3e6ff"/><rect x="0" y="0" width="100" height="50" fill="#6a2bb5"/><circle cx="30" cy="24" r="9" fill="#ff2bd6"/><circle cx="67" cy="30" r="6" fill="#ff2bd6"/><circle cx="52" cy="13" r="4.5" fill="#e23bff"/><text x="50" y="33" text-anchor="middle" font-size="22" font-weight="900" fill="#fff" font-family="Orbitron,sans-serif">M</text><rect x="0" y="44" width="100" height="12" fill="#1a0a2e"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#1a0a2e" stroke-width="5"/><circle cx="50" cy="50" r="14" fill="#1a0a2e"/><circle cx="50" cy="50" r="10" fill="#f3e6ff"/><circle cx="50" cy="50" r="5" fill="#fff" stroke="#1a0a2e" stroke-width="1.6"/></svg></span><span class="t-ket">N</span></h1>
   <div class="subtitle">TAP CLICKER</div>
+  <div class="credit">Developed by Yena Chang</div>
 
   <div class="name-row">
     <input type="text" id="playerName" placeholder="TRAINER NAME" maxlength="10" aria-label="trainer name">
