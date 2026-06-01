@@ -193,19 +193,19 @@
     box-shadow:inset 0 0 18px rgba(255,230,0,.4)}
   @keyframes flow{to{transform:translate3d(66.667%,0,0)}}
   .bolt-bright{position:absolute; inset:0; width:100%; height:100%}
-  .bolt-bright .glow{fill:none; stroke:var(--magenta-2); stroke-width:5; opacity:.5;
-    filter:drop-shadow(0 0 6px var(--magenta)); animation:crackle .25s steps(2) infinite}
+  .bolt-bright .glow{fill:none; stroke:var(--magenta-2); stroke-width:5; opacity:.25;
+    filter:drop-shadow(0 0 4px var(--magenta))}
   .bolt-bright .core{fill:none; stroke:var(--yellow); stroke-width:2.4; stroke-linecap:round;
-    stroke-dasharray:14 7; filter:drop-shadow(0 0 5px var(--yellow));
-    animation:flowD .5s linear infinite, crackle .22s steps(2) infinite}
+    filter:drop-shadow(0 0 5px var(--yellow))}
   @keyframes flowD{to{stroke-dashoffset:-210}}
   @keyframes crackle{0%{opacity:1}50%{opacity:.5}100%{opacity:.85}}
   .charge-empty{position:absolute; inset:0; z-index:2; transform:scaleX(var(--empty-ratio));
     transform-origin:right center; transition:transform .25s var(--ease); will-change:transform;
     background:linear-gradient(180deg,#120623,#0c0418)}
   .charge-surge{position:absolute; inset:0; z-index:4; opacity:0; pointer-events:none;
+    border-radius:12px;
     box-shadow:0 0 26px rgba(255,230,0,.7), inset 0 0 18px rgba(226,59,255,.5);
-    background:rgba(255,230,0,.12); transition:opacity .12s; will-change:opacity}
+    transition:opacity .12s; will-change:opacity}
   .charge.surge .charge-surge{opacity:1}
   .bolt-tip-track{position:absolute; inset:0; z-index:4; transform:translate3d(var(--tip-offset),0,0);
     transition:transform .25s var(--ease); will-change:transform; pointer-events:none}
