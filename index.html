@@ -282,6 +282,18 @@
 
 <script>
   const API = 'https://popketmon-server.onrender.com';
+  // ===== 유저 고유키 (기기마다 딱 1개) =====
+function getUserId() {
+  let id = localStorage.getItem('popkemon_uid');  // 저장된 키 꺼내기
+  if (!id) {                                       // 없으면 = 이 기기 첫 방문
+    id = crypto.randomUUID();                       // 새 고유키 생성
+    localStorage.setItem('popkemon_uid', id);       // 기기에 저장
+  }
+  return id;
+}
+
+const USER_ID = getUserId();
+console.log('내 유저키:', USER_ID);  // F12 콘솔에서 확인용
   let count = parseInt(localStorage.getItem('popketmon_count')) || 0;
   let playerName = localStorage.getItem('popketmon_name') || 'TRAINER';
   let recentPops = [];
@@ -332,9 +344,10 @@
 
   async function sendScore(){
     try{ await fetch(API+'/pop',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:playerName,count})});
+        body:JSON.stringify({user_id:USER_ID, name:playerName, count})});  // ← user_id 추가
       $('serverStatus').textContent='ONLINE'; fetchMyRank();
     }catch(e){ $('serverStatus').textContent='OFFLINE'; }
+  }
   }
   async function fetchMyRank(){
     try{const res=await fetch(API+'/ranking/'+encodeURIComponent(playerName));
