@@ -282,7 +282,7 @@
 
 <script>
   const API = 'http://localhost:8000';
-  let count = 0;
+  let count = parseInt(localStorage.getItem('popketmon_count')) || 0;
   let playerName = localStorage.getItem('popketmon_name') || 'TRAINER';
   let recentPops = [];
   let popTimer = null, surgeTimer = null;
@@ -293,6 +293,7 @@
   const monBtn=$('monBtn'), toast=$('toast');
   const charge=$('charge'), chargeFill=$('chargeFill'), boltTip=$('boltTip');
   $('playerName').value = playerName;
+  totalEl.textContent = count.toLocaleString();
 
   const milestones=[[10,'\u26A1'],[50,'\uD83D\uDD25'],[100,'\uD83D\uDC9C'],[500,'\uD83D\uDC7E'],[1000,'\uD83C\uDF1F'],[5000,'\uD83D\uDC51']];
   const getMilestone=n=>{let r='';for(const[t,e]of milestones)if(n>=t)r=e;return r;};
@@ -358,6 +359,8 @@
   function pop(x,y){
     count++;
     totalEl.textContent=count.toLocaleString();
+    localStorage.setItem('popketmon_count', count);
+    
     recentPops.push(Date.now());
 
     // charge gauge
