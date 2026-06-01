@@ -176,24 +176,22 @@
   @keyframes spark{to{opacity:0; transform:translate(var(--dx),var(--dy)) scale(.2)}}
 
   /* ===== ELECTRIC CHARGE GAUGE (lightning, not a plain bar) ===== */
-  .charge{position:relative; width:100%; height:46px; margin-top:20px; --barw:344px}
-  .charge.surge .charge-track{box-shadow:0 0 26px rgba(255,230,0,.7), inset 0 0 18px rgba(226,59,255,.5)}
-  .charge.surge .energy{filter:brightness(1.6)}
+  .charge{position:relative; width:100%; height:46px; margin-top:20px; --empty-ratio:1; --tip-offset:-100%;
+    contain:layout}
   .charge-track{position:absolute; inset:0; border-radius:12px; overflow:hidden;
     background:linear-gradient(180deg,#120623,#0c0418);
     border:1.5px solid var(--line);
-    box-shadow:inset 0 0 14px rgba(123,44,255,.35); transition:box-shadow .12s}
-  .bolt-dim{position:absolute; inset:0; width:100%; height:100%; opacity:.5}
+    box-shadow:inset 0 0 14px rgba(123,44,255,.35)}
+  .bolt-dim{position:absolute; inset:0; width:100%; height:100%; opacity:.5; z-index:3}
   .bolt-dim polyline{fill:none; stroke:var(--purple); stroke-width:2;
     filter:drop-shadow(0 0 3px var(--purple)); opacity:.7}
-  .charge-fill{position:absolute; top:0; left:0; height:100%; width:0%;
-    overflow:hidden; border-radius:12px 0 0 12px; transition:width .25s var(--ease)}
-  .charge-bright{position:absolute; top:0; left:0; height:100%; width:var(--barw)}
-  .energy{position:absolute; inset:0;
-    background:linear-gradient(90deg, var(--purple), var(--magenta) 45%, var(--magenta-2) 70%, var(--yellow));
-    background-size:200% 100%; animation:flow 1.1s linear infinite; opacity:.9;
+  .charge-bright{position:absolute; inset:0; z-index:1; overflow:hidden}
+  .energy{position:absolute; top:0; bottom:0; left:-200%; width:300%;
+    background:repeating-linear-gradient(90deg, var(--purple) 0%, var(--magenta) 30%,
+      var(--magenta-2) 48%, var(--yellow) 66.667%);
+    animation:flow 1.1s linear infinite; opacity:.9; will-change:transform;
     box-shadow:inset 0 0 18px rgba(255,230,0,.4)}
-  @keyframes flow{to{background-position:-200% 0}}
+  @keyframes flow{to{transform:translate3d(66.667%,0,0)}}
   .bolt-bright{position:absolute; inset:0; width:100%; height:100%}
   .bolt-bright .glow{fill:none; stroke:var(--magenta-2); stroke-width:5; opacity:.5;
     filter:drop-shadow(0 0 6px var(--magenta)); animation:crackle .25s steps(2) infinite}
@@ -202,10 +200,19 @@
     animation:flowD .5s linear infinite, crackle .22s steps(2) infinite}
   @keyframes flowD{to{stroke-dashoffset:-210}}
   @keyframes crackle{0%{opacity:1}50%{opacity:.5}100%{opacity:.85}}
-  .bolt-tip{position:absolute; top:50%; left:0; transform:translate(-50%,-50%) scale(0);
+  .charge-empty{position:absolute; inset:0; z-index:2; transform:scaleX(var(--empty-ratio));
+    transform-origin:right center; transition:transform .25s var(--ease); will-change:transform;
+    background:linear-gradient(180deg,#120623,#0c0418)}
+  .charge-surge{position:absolute; inset:0; z-index:4; opacity:0; pointer-events:none;
+    box-shadow:0 0 26px rgba(255,230,0,.7), inset 0 0 18px rgba(226,59,255,.5);
+    background:rgba(255,230,0,.12); transition:opacity .12s; will-change:opacity}
+  .charge.surge .charge-surge{opacity:1}
+  .bolt-tip-track{position:absolute; inset:0; z-index:4; transform:translate3d(var(--tip-offset),0,0);
+    transition:transform .25s var(--ease); will-change:transform; pointer-events:none}
+  .bolt-tip{position:absolute; top:50%; right:0; transform:translate(50%,-50%) scale(0);
     font-size:1.3rem; filter:drop-shadow(0 0 8px var(--yellow));
-    transition:left .25s var(--ease); animation:tipFlick .18s steps(2) infinite}
-  .bolt-tip.on{transform:translate(-50%,-50%) scale(1)}
+    animation:tipFlick .18s steps(2) infinite}
+  .bolt-tip-track.on .bolt-tip{transform:translate(50%,-50%) scale(1)}
   @keyframes tipFlick{50%{opacity:.6}}
   .next-label{font-size:.58rem; color:var(--muted); letter-spacing:2px; margin-top:8px}
 
@@ -328,19 +335,19 @@
   <!-- electric charge gauge -->
   <div class="charge" id="charge">
     <div class="charge-track">
+      <div class="charge-bright">
+        <div class="energy"></div>
+        <svg class="bolt-bright" viewBox="0 0 400 44" preserveAspectRatio="none">
+          <polyline class="glow" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
+          <polyline class="core" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
+        </svg>
+      </div>
+      <div class="charge-empty"></div>
       <svg class="bolt-dim" viewBox="0 0 400 44" preserveAspectRatio="none">
         <polyline points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/></svg>
-      <div class="charge-fill" id="chargeFill">
-        <div class="charge-bright">
-          <div class="energy"></div>
-          <svg class="bolt-bright" viewBox="0 0 400 44" preserveAspectRatio="none">
-            <polyline class="glow" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
-            <polyline class="core" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
-          </svg>
-        </div>
-      </div>
     </div>
-    <div class="bolt-tip" id="boltTip">&#9889;</div>
+    <div class="charge-surge"></div>
+    <div class="bolt-tip-track" id="boltTip"><div class="bolt-tip">&#9889;</div></div>
   </div>
   <div class="next-label" id="nextLabel">CHARGE UP!</div>
   <div class="milestone" id="milestone"></div>
@@ -384,7 +391,7 @@
   const totalEl=$('total'), ppsEl=$('pps'), myRankEl=$('myRank');
   const milestoneEl=$('milestone'), nextLabel=$('nextLabel');
   const monBtn=$('monBtn'), toast=$('toast');
-  const charge=$('charge'), chargeFill=$('chargeFill'), boltTip=$('boltTip');
+  const charge=$('charge'), boltTip=$('boltTip');
   $('playerName').value = playerName;
 
   const milestones=[[10,'\u26A1'],[50,'\uD83D\uDD25'],[100,'\uD83D\uDC9C'],[500,'\uD83D\uDC7E'],[1000,'\uD83C\uDF1F'],[5000,'\uD83D\uDC51']];
@@ -399,15 +406,11 @@
       const lo=prev?prev[0]:0; pct=Math.min(((count-lo)/(next[0]-lo))*100,100);
       nextLabel.textContent=(next[0]-count)+' POPS TO '+next[1];
     }else{ pct=100; nextLabel.textContent='MAX CHARGE \uD83D\uDC51'; }
-    chargeFill.style.width=pct+'%';
-    boltTip.style.left=pct+'%'; boltTip.classList.add('on');
+    charge.style.setProperty('--empty-ratio',1-pct/100);
+    charge.style.setProperty('--tip-offset',(pct-100)+'%'); boltTip.classList.add('on');
     const em=getMilestone(count);
     if(em) milestoneEl.textContent=em;
   }
-
-  // keep the lightning geometry at full-bar width so the fill reveals it left->right
-  function sizeCharge(){ charge.style.setProperty('--barw', charge.clientWidth+'px'); }
-  sizeCharge(); window.addEventListener('resize', sizeCharge);
 
   function showToast(msg){ toast.textContent=msg; toast.classList.add('show');
     setTimeout(()=>toast.classList.remove('show'),1400); }
@@ -497,8 +500,8 @@
       const lo=prev?prev[0]:0; pct=Math.min(((count-lo)/(next[0]-lo))*100,100);
       nextLabel.textContent=(next[0]-count)+' POPS TO '+next[1];
     }else{ pct=100; nextLabel.textContent='MAX CHARGE \uD83D\uDC51'; }
-    chargeFill.style.width=pct+'%';
-    boltTip.style.left=pct+'%'; boltTip.classList.add('on');
+    charge.style.setProperty('--empty-ratio',1-pct/100);
+    charge.style.setProperty('--tip-offset',(pct-100)+'%'); boltTip.classList.add('on');
     // electric surge flash
     charge.classList.add('surge');
     if(surgeTimer) clearTimeout(surgeTimer);
