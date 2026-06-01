@@ -24,6 +24,7 @@
     display:flex; flex-direction:column; align-items:center;
     padding:34px 16px 60px; overflow-x:hidden;
     user-select:none; -webkit-user-select:none;
+    touch-action:manipulation; -ms-touch-action:manipulation; overscroll-behavior:none;
     font-variant-numeric:tabular-nums; letter-spacing:.5px;
   }
   /* cyberpunk atmosphere: neon glows + perspective grid floor */
@@ -157,7 +158,7 @@
   @keyframes ringBreathe{50%{opacity:.35; transform:scale(1.04) rotate(180deg)}}
 
   .mon-btn{position:relative; width:228px; height:228px; border:none; background:none;
-    cursor:pointer; padding:0; outline:none; -webkit-tap-highlight-color:transparent}
+    cursor:pointer; padding:0; outline:none; touch-action:manipulation; -webkit-tap-highlight-color:transparent}
   .mon-img{width:100%; height:100%; object-fit:contain;
     filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(226,59,255,.35));
     animation:idleFloat 3s ease-in-out infinite; transition:transform .08s var(--ease); pointer-events:none}
@@ -330,6 +331,21 @@
   const milestones=[[10,'\u26A1'],[50,'\uD83D\uDD25'],[100,'\uD83D\uDC9C'],[500,'\uD83D\uDC7E'],[1000,'\uD83C\uDF1F'],[5000,'\uD83D\uDC51']];
   const getMilestone=n=>{let r='';for(const[t,e]of milestones)if(n>=t)r=e;return r;};
 
+  // 현재 count에 맞춰 충전 게이지/다음 목표/마일스톤을 다시 그린다 (점수 복원 시 사용)
+  function applyGauge(){
+    const next=milestones.find(([t])=>t>count);
+    const prev=[...milestones].reverse().find(([t])=>t<=count);
+    let pct;
+    if(next){
+      const lo=prev?prev[0]:0; pct=Math.min(((count-lo)/(next[0]-lo))*100,100);
+      nextLabel.textContent=(next[0]-count)+' POPS TO '+next[1];
+    }else{ pct=100; nextLabel.textContent='MAX CHARGE \uD83D\uDC51'; }
+    chargeFill.style.width=pct+'%';
+    boltTip.style.left=pct+'%'; boltTip.classList.add('on');
+    const em=getMilestone(count);
+    if(em) milestoneEl.textContent=em;
+  }
+
   // keep the lightning geometry at full-bar width so the fill reveals it left->right
   function sizeCharge(){ charge.style.setProperty('--barw', charge.clientWidth+'px'); }
   sizeCharge(); window.addEventListener('resize', sizeCharge);
@@ -368,9 +384,29 @@
       $('serverStatus').textContent='ONLINE'; fetchMyRank();
     }catch(e){ $('serverStatus').textContent='OFFLINE'; }
   }
+  // 서버 기록을 게임에 반영. count는 절대 줄지 않게 MAX로 합침.
+  function applyRecord(d, restoreName){
+    if(!d || d.error) return;
+    if(typeof d.count === 'number' && d.count > count){
+      count = d.count;
+      totalEl.textContent = count.toLocaleString();
+      applyGauge();
+    }
+    if(restoreName && d.name){
+      playerName = d.name;
+      $('playerName').value = d.name;
+      localStorage.setItem('popkemon_name', d.name);
+    }
+    if(d.rank) myRankEl.textContent = '#' + d.rank;
+  }
   async function fetchMyRank(){
     try{const res=await fetch(API+'/ranking/'+encodeURIComponent(USER_ID));
-      const d=await res.json(); if(d.rank) myRankEl.textContent='#'+d.rank;}catch(e){}
+      applyRecord(await res.json(), false);}catch(e){}
+  }
+  // 앱 진입 시 한 번: 내 저장된 점수와 닉네임을 받아 게임에 복원
+  async function loadMyRecord(){
+    try{const res=await fetch(API+'/ranking/'+encodeURIComponent(USER_ID));
+      applyRecord(await res.json(), true); $('serverStatus').textContent='ONLINE';}catch(e){}
   }
   async function fetchRanking(){
     try{
@@ -431,7 +467,9 @@
   setInterval(()=>{const now=Date.now(); recentPops=recentPops.filter(t=>now-t<1000);
     ppsEl.textContent=recentPops.length;},200);
 
-  fetchRanking(); fetchMyRank();
+  document.addEventListener('dblclick', e=>e.preventDefault(), {passive:false});
+
+  fetchRanking(); loadMyRecord();
   setInterval(fetchRanking,30000);
 </script>
 </body>
