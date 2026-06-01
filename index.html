@@ -470,6 +470,12 @@
 
   document.addEventListener('dblclick', e=>e.preventDefault(), {passive:false});
 
+  // iOS 사파리 핀치/제스처 줌 차단 (두 손가락 줌으로 인한 화면 이동 방지)
+  document.addEventListener('gesturestart', e => e.preventDefault(), false);
+  document.addEventListener('gesturechange', e => e.preventDefault(), false);
+  document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  document.addEventListener('touchmove', e => { if (e.scale !== 1) e.preventDefault(); }, { passive: false });
+
   fetchRanking(); loadMyRecord();
   setInterval(fetchRanking,30000);
 
