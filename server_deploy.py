@@ -93,10 +93,10 @@ async def record_pop(req: PopRequest):
     """
     conn = get_db()
     conn.execute(
-        "INSERT INTO scores (name, count) VALUES (?, ?) "
-        "ON CONFLICT(name) DO UPDATE SET count = ?",
-        (req.name, req.count, req.count)
-    )
+    "INSERT INTO scores (name, count) VALUES (?, ?) "
+    "ON CONFLICT(name) DO UPDATE SET count = MAX(scores.count, excluded.count)",
+    (req.name, req.count)
+)
     # 로그도 한 줄 남기기
     conn.execute(
         "INSERT INTO pop_logs (name, count, time) VALUES (?, ?, ?)",
