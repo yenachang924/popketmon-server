@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,39 +69,12 @@
 
   /* KETMON: steady magenta neon (original project vibe) */
   .t-ket{color:var(--magenta);
-    text-shadow:0 0 8px rgba(226,59,255,.85), 0 0 26px rgba(123,44,255,.65), 0 0 40px rgba(226,59,255,.35)}
+    text-shadow:0 0 10px rgba(226,59,255,.95), 0 0 32px rgba(123,44,255,.78), 0 0 52px rgba(226,59,255,.48)}
 
-  /* POP: white, high-energy POPcat-style glitch */
+  /* POP: white neon, animation disabled */
   .t-pop{color:#fff;
-    text-shadow:0 0 8px rgba(255,255,255,.95), 0 0 22px rgba(226,59,255,.55);
-    animation:popTwitch .26s steps(2) infinite}
-  .t-pop::before,.t-pop::after{content:attr(data-text); position:absolute; inset:0; pointer-events:none}
-  .t-pop::before{color:#fff; text-shadow:0 0 6px #fff;
-    animation:popWhite 1.1s steps(1) infinite}                 /* white glitch */
-  .t-pop::after{color:var(--magenta-2); opacity:.9;
-    animation:popChroma .9s steps(1) infinite}                 /* chromatic energy */
-  @keyframes popTwitch{0%,100%{transform:translate(0,0)}50%{transform:translate(.5px,-.5px)}}
-  @keyframes popWhite{
-    0%,9%,100%{clip-path:inset(0 0 100% 0);transform:translate(0)}
-    11%{clip-path:inset(0 0 58% 0);transform:translate(-5px,-2px)}
-    16%{clip-path:inset(28% 0 38% 0);transform:translate(6px,1px)}
-    21%{clip-path:inset(64% 0 0 0);transform:translate(-4px,2px)}
-    23%{clip-path:inset(0 0 100% 0)}
-    44%{clip-path:inset(8% 0 70% 0);transform:translate(5px,-1px)}
-    48%{clip-path:inset(0 0 100% 0)}
-    63%{clip-path:inset(42% 0 22% 0);transform:translate(-6px,0)}
-    66%{clip-path:inset(0 0 100% 0)}
-    84%{clip-path:inset(15% 0 55% 0);transform:translate(4px,2px)}
-    88%{clip-path:inset(0 0 100% 0)}}
-  @keyframes popChroma{
-    0%,12%,100%{clip-path:inset(100% 0 0 0);transform:translate(0)}
-    14%{clip-path:inset(18% 0 52% 0);transform:translate(5px,1px)}
-    19%{clip-path:inset(56% 0 16% 0);transform:translate(-5px,-1px)}
-    22%{clip-path:inset(100% 0 0 0)}
-    52%{clip-path:inset(0 0 74% 0);transform:translate(4px,2px)}
-    56%{clip-path:inset(100% 0 0 0)}
-    78%{clip-path:inset(34% 0 40% 0);transform:translate(-4px,1px)}
-    82%{clip-path:inset(100% 0 0 0)}}
+    text-shadow:0 0 10px rgba(255,255,255,1), 0 0 28px rgba(226,59,255,.72), 0 0 46px rgba(123,44,255,.42)}
+  .t-pop::before,.t-pop::after{display:none}
   .subtitle{font-size:.62rem; letter-spacing:5px; color:var(--muted); margin-top:8px}
   .credit{font-size:.52rem; letter-spacing:3px; color:#fff; opacity:.6; margin-top:5px; font-weight:400}
 
@@ -110,20 +83,18 @@
     display:inline-block; color:var(--yellow); font-size:1.3em; line-height:1;
     transform:rotate(12deg); transform-origin:50% 75%;
     margin:0 .04em 0 .02em;
-    text-shadow:0 0 10px rgba(255,230,0,.95), 0 0 28px rgba(255,230,0,.55), 0 0 44px rgba(226,59,255,.4);
-    animation:bigPbob 2.6s ease-in-out infinite;
+    text-shadow:0 0 12px rgba(255,230,0,1), 0 0 34px rgba(255,230,0,.68), 0 0 56px rgba(226,59,255,.52);
+    animation:none;
   }
   @keyframes bigPbob{50%{transform:rotate(12deg) translateY(-4px)}}
 
-  /* lemon glow halo over the whole wordmark for the "lemon point" feel */
-  .title{filter:drop-shadow(0 0 18px rgba(255,230,0,.12))}
-
   /* pokeball (master-ball look) sitting in place of the O */
-  .t-ball{display:inline-block; width:.92em; height:.92em; vertical-align:-.14em; margin:0 .01em;
-    filter:drop-shadow(0 0 10px rgba(226,59,255,.7)) drop-shadow(0 0 18px rgba(255,230,0,.25));
-    animation:ballSpin 6s ease-in-out infinite}
-  @keyframes ballSpin{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
-  .t-ball svg{width:100%; height:100%; display:block}
+  .t-ball{display:inline-block; width:.92em; height:.92em; vertical-align:-.14em; margin:0 .01em}
+  .t-ball::before{content:""; position:absolute; inset:16%; border-radius:50%;
+    box-shadow:0 0 19px 9px rgba(226,59,255,.88),0 0 36px 15px rgba(255,230,0,.4);
+    pointer-events:none}
+  .t-ball svg{position:relative; width:100%; height:100%; display:block;
+    transform:rotate(-6deg); backface-visibility:hidden}
 
   .name-row{display:flex; gap:8px; margin:18px 0 4px}
   .name-row input{padding:9px 14px; border:1.5px solid var(--line); border-radius:10px;
@@ -148,21 +119,21 @@
   .arena{position:relative; width:260px; height:250px; margin:12px 0 2px;
     display:flex; align-items:center; justify-content:center}
   .platform{position:absolute; bottom:16px; width:180px; height:40px; border-radius:50%;
-    background:radial-gradient(closest-side, rgba(226,59,255,.6), rgba(226,59,255,0) 75%);
-    animation:platformPulse 2.4s ease-in-out infinite}
-  @keyframes platformPulse{50%{transform:scale(1.08); opacity:.75}}
+    background:radial-gradient(closest-side, rgba(226,59,255,.5), rgba(226,59,255,0) 75%);
+    opacity:.74}
   .tap-ring{position:absolute; width:200px; height:200px; border-radius:50%;
-    border:2px dashed rgba(255,230,0,.5);
-    animation:ringSpin 9s linear infinite, ringBreathe 2.4s ease-in-out infinite; pointer-events:none}
-  @keyframes ringSpin{to{transform:rotate(360deg)}}
-  @keyframes ringBreathe{50%{opacity:.35; transform:scale(1.04) rotate(180deg)}}
+    border:2px dashed rgba(255,230,0,.5); opacity:.62; pointer-events:none}
 
   .mon-btn{position:relative; width:228px; height:228px; border:none; background:none;
     cursor:pointer; padding:0; outline:none; touch-action:none; -webkit-tap-highlight-color:transparent}
+  .mon-btn::before{content:""; position:absolute; left:50%; bottom:24px; width:150px; height:34px;
+    transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.42);
+    box-shadow:0 10px 18px rgba(0,0,0,.42), 0 0 18px rgba(226,59,255,.32);
+    pointer-events:none}
   .mon-img{width:100%; height:100%; object-fit:contain;
-    filter:drop-shadow(0 10px 18px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(226,59,255,.35));
-    animation:idleFloat 3s ease-in-out infinite; transition:transform .08s var(--ease); pointer-events:none}
-  @keyframes idleFloat{50%{transform:translateY(-10px)}}
+    animation:none; transition:transform .08s var(--ease); pointer-events:none;
+    will-change:transform; transform:translateZ(0); backface-visibility:hidden}
+  @keyframes idleFloat{50%{transform:translate3d(0,-10px,0)}}
   .mon-btn.pop .mon-img{animation:none; transform:scale(.88) rotate(-3deg)}
 
   .pop-text{position:fixed; z-index:50; pointer-events:none; white-space:nowrap;
@@ -175,36 +146,42 @@
   @keyframes spark{to{opacity:0; transform:translate(var(--dx),var(--dy)) scale(.2)}}
 
   /* ===== ELECTRIC CHARGE GAUGE (lightning, not a plain bar) ===== */
-  .charge{position:relative; width:100%; height:46px; margin-top:20px; --barw:344px}
-  .charge.surge .charge-track{box-shadow:0 0 26px rgba(255,230,0,.7), inset 0 0 18px rgba(226,59,255,.5)}
-  .charge.surge .energy{filter:brightness(1.6)}
+  .charge{position:relative; width:100%; height:46px; margin-top:20px; --empty-ratio:1; --tip-offset:-100%;
+    contain:layout}
   .charge-track{position:absolute; inset:0; border-radius:12px; overflow:hidden;
     background:linear-gradient(180deg,#120623,#0c0418);
     border:1.5px solid var(--line);
-    box-shadow:inset 0 0 14px rgba(123,44,255,.35); transition:box-shadow .12s}
-  .bolt-dim{position:absolute; inset:0; width:100%; height:100%; opacity:.5}
-  .bolt-dim polyline{fill:none; stroke:var(--purple); stroke-width:2;
-    filter:drop-shadow(0 0 3px var(--purple)); opacity:.7}
-  .charge-fill{position:absolute; top:0; left:0; height:100%; width:0%;
-    overflow:hidden; border-radius:12px 0 0 12px; transition:width .25s var(--ease)}
-  .charge-bright{position:absolute; top:0; left:0; height:100%; width:var(--barw)}
-  .energy{position:absolute; inset:0;
-    background:linear-gradient(90deg, var(--purple), var(--magenta) 45%, var(--magenta-2) 70%, var(--yellow));
-    background-size:200% 100%; animation:flow 1.1s linear infinite; opacity:.9;
+    box-shadow:inset 0 0 14px rgba(123,44,255,.35)}
+  .bolt-dim{position:absolute; inset:0; width:100%; height:100%; opacity:.5; z-index:3}
+  .bolt-dim polyline{fill:none; stroke:rgba(123,44,255,.8); stroke-width:2.6;
+    opacity:.7}
+  .charge-bright{position:absolute; inset:0; z-index:1; overflow:hidden}
+  .energy{position:absolute; top:0; bottom:0; left:-200%; width:300%;
+    background:repeating-linear-gradient(90deg, var(--purple) 0%, var(--magenta) 30%,
+      var(--magenta-2) 48%, var(--yellow) 66.667%);
+    animation:none; opacity:.9;
     box-shadow:inset 0 0 18px rgba(255,230,0,.4)}
-  @keyframes flow{to{background-position:-200% 0}}
+  @keyframes flow{to{transform:translate3d(66.667%,0,0)}}
   .bolt-bright{position:absolute; inset:0; width:100%; height:100%}
-  .bolt-bright .glow{fill:none; stroke:var(--magenta-2); stroke-width:5; opacity:.5;
-    filter:drop-shadow(0 0 6px var(--magenta)); animation:crackle .25s steps(2) infinite}
+  .bolt-bright .glow{fill:none; stroke:rgba(255,43,214,.45); stroke-width:6.4; opacity:.32}
   .bolt-bright .core{fill:none; stroke:var(--yellow); stroke-width:2.4; stroke-linecap:round;
-    stroke-dasharray:14 7; filter:drop-shadow(0 0 5px var(--yellow));
-    animation:flowD .5s linear infinite, crackle .22s steps(2) infinite}
+    opacity:.95}
   @keyframes flowD{to{stroke-dashoffset:-210}}
   @keyframes crackle{0%{opacity:1}50%{opacity:.5}100%{opacity:.85}}
-  .bolt-tip{position:absolute; top:50%; left:0; transform:translate(-50%,-50%) scale(0);
-    font-size:1.3rem; filter:drop-shadow(0 0 8px var(--yellow));
-    transition:left .25s var(--ease); animation:tipFlick .18s steps(2) infinite}
-  .bolt-tip.on{transform:translate(-50%,-50%) scale(1)}
+  .charge-empty{position:absolute; inset:0; z-index:2; transform:scaleX(var(--empty-ratio));
+    transform-origin:right center; transition:transform .25s var(--ease); will-change:transform;
+    background:linear-gradient(180deg,#120623,#0c0418)}
+  .charge-surge{position:absolute; inset:0; z-index:4; opacity:0; pointer-events:none;
+    border-radius:12px;
+    box-shadow:0 0 26px rgba(255,230,0,.7), inset 0 0 18px rgba(226,59,255,.5);
+    transition:opacity .12s; will-change:opacity}
+  .charge.surge .charge-surge{opacity:1}
+  .bolt-tip-track{position:absolute; inset:0; z-index:4; transform:translate3d(var(--tip-offset),0,0);
+    transition:transform .25s var(--ease); will-change:transform; pointer-events:none}
+  .bolt-tip{position:absolute; top:50%; right:0; transform:translate(50%,-50%) scale(0);
+    font-size:1.3rem; text-shadow:0 0 10px rgba(255,230,0,.75);
+    animation:none}
+  .bolt-tip-track.on .bolt-tip{transform:translate(50%,-50%) scale(1)}
   @keyframes tipFlick{50%{opacity:.6}}
   .next-label{font-size:.58rem; color:var(--muted); letter-spacing:2px; margin-top:8px}
 
@@ -220,8 +197,8 @@
     background-size:300% 100%;
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     -webkit-mask-composite:xor; mask-composite:exclude;
-    animation:goldShimmer 3s linear infinite; pointer-events:none}
-  @keyframes goldShimmer{to{background-position:300% 0}}
+    animation:none; pointer-events:none}
+  @keyframes goldShimmer{50%{opacity:.45}}
   .rank-head h2{font-weight:900; font-size:.8rem; letter-spacing:3px; color:var(--magenta);
     text-shadow:0 0 10px rgba(226,59,255,.6); margin-bottom:12px}
   .rank-item{display:flex; align-items:center; gap:10px; padding:7px 0; font-size:12px;
@@ -265,21 +242,22 @@
     display:flex; flex-direction:row; align-items:center; gap:12px; padding:20px 14px;
     background:radial-gradient(120% 120% at 50% 0%, #3d0838, #1d0420 74%);
     border:1.8px solid #e23bff;
-    box-shadow:0 0 26px rgba(226,59,255,.65), inset 0 0 32px rgba(226,59,255,.24);
-    animation:dangerPulse 1.5s ease-in-out infinite}
-  @keyframes dangerPulse{50%{box-shadow:0 0 42px rgba(226,59,255,1), inset 0 0 38px rgba(255,45,149,.3)}}
+    box-shadow:0 0 26px rgba(226,59,255,.65), inset 0 0 32px rgba(226,59,255,.24)}
+  .danger-glow{position:absolute; inset:0; z-index:1; pointer-events:none;
+    box-shadow:inset 0 0 38px rgba(255,45,149,.42);
+    opacity:.28; animation:none}
+  @keyframes dangerPulse{50%{opacity:1}}
   .danger::before,.danger::after{content:""; position:absolute; left:0; right:0; height:9px; z-index:3;
     background:repeating-linear-gradient(45deg,#e23bff 0 14px,#ff2d95 14px 26px,#e23bff 26px 38px,#ff1f3d 38px 44px); opacity:.95}
   .danger::before{top:0}
   .danger::after{bottom:0}
   /* warning text — left side, enlarged */
-  .danger-text{flex:1 1 auto; min-width:0; text-align:left; position:relative; z-index:2; padding:2px 2px 2px 6px}
+  .danger-text{flex:1 1 auto; min-width:0; text-align:left; position:relative; z-index:4; padding:2px 2px 2px 6px}
   /* whole arm photo — right side, aspect kept, height matches the ranking panel */
-  .danger-photo{flex:0 0 auto; height:200px; aspect-ratio:2002/3088; border-radius:10px; pointer-events:none;
+  .danger-photo{position:relative; z-index:2; flex:0 0 auto; height:200px; aspect-ratio:2002/3088; border-radius:10px; pointer-events:none;
     background-position:center; background-size:cover; background-repeat:no-repeat;
     box-shadow:0 0 16px rgba(226,59,255,.55), inset 0 0 0 1px rgba(226,59,255,.45);
-    filter:grayscale(.12) contrast(1.05) saturate(1.2) brightness(.98);
-    animation:photoThrob 1.8s ease-in-out infinite}
+    animation:none}
   @keyframes photoThrob{50%{opacity:.86}}
   .danger-msg{font-weight:900; line-height:1.5; color:#ffe3f7; letter-spacing:.5px;
     font-size:clamp(1rem,4.6vw,1.25rem); text-shadow:0 0 4px #1d0420,0 0 10px rgba(226,59,255,.9)}
@@ -287,7 +265,7 @@
   .danger-msg .yacha{display:inline-block; white-space:nowrap; margin-top:12px;
     font-size:clamp(1.2rem,6vw,1.75rem); color:#ffe600; letter-spacing:1px;
     text-shadow:0 0 6px #1d0420,0 0 12px #ffe600,0 0 26px #ffd400,0 0 44px #ff8a00;
-    transform:rotate(-3deg); animation:yachaShake .08s steps(2) infinite}
+    transform:rotate(-3deg); animation:none}
   @keyframes yachaShake{0%,100%{transform:rotate(-3deg) translate(0,0)}50%{transform:rotate(-3deg) translate(2px,-2px)}}
 </style>
 </head>
@@ -299,7 +277,7 @@
 </div>
 <div class="scan"></div>
 <div class="stage">
-  <h1 class="title" aria-label="POPKEMON"><span class="t-pop" data-text="PO">PO</span><span class="t-bigP">P</span><span class="t-ket">KEM</span><span class="t-ball" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="ballClip"><circle cx="50" cy="50" r="47"/></clipPath></defs><g clip-path="url(#ballClip)"><rect x="0" y="50" width="100" height="50" fill="#f3e6ff"/><rect x="0" y="0" width="100" height="50" fill="#6a2bb5"/><circle cx="30" cy="24" r="9" fill="#ff2bd6"/><circle cx="67" cy="30" r="6" fill="#ff2bd6"/><circle cx="52" cy="13" r="4.5" fill="#e23bff"/><text x="50" y="33" text-anchor="middle" font-size="22" font-weight="900" fill="#fff" font-family="Orbitron,sans-serif">M</text><rect x="0" y="44" width="100" height="12" fill="#1a0a2e"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#1a0a2e" stroke-width="5"/><circle cx="50" cy="50" r="14" fill="#1a0a2e"/><circle cx="50" cy="50" r="10" fill="#f3e6ff"/><circle cx="50" cy="50" r="5" fill="#fff" stroke="#1a0a2e" stroke-width="1.6"/></svg></span><span class="t-ket">N</span></h1>
+  <h1 class="title" aria-label="POPKEMON"><span class="t-pop" data-text="PO">PO</span><span class="t-bigP">P</span><span class="t-ket">KEM</span><span class="t-ball" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="ballClip"><circle cx="50" cy="50" r="47"/></clipPath></defs><g clip-path="url(#ballClip)"><rect x="0" y="50" width="100" height="50" fill="#f3e6ff"/><rect x="0" y="0" width="100" height="50" fill="#6a2bb5"/><circle cx="30" cy="24" r="9" fill="#ff2bd6"/><circle cx="67" cy="30" r="6" fill="#ff2bd6"/><circle cx="52" cy="13" r="4.5" fill="#e23bff"/><path d="M38 34V14h5l7 10 7-10h5v20h-5V22l-7 9-7-9v12z" fill="#fff" transform="translate(10 4.8) scale(.8)"/><rect x="0" y="44" width="100" height="12" fill="#1a0a2e"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#1a0a2e" stroke-width="5"/><circle cx="50" cy="50" r="14" fill="#1a0a2e"/><circle cx="50" cy="50" r="10" fill="#f3e6ff"/><circle cx="50" cy="50" r="5" fill="#fff" stroke="#1a0a2e" stroke-width="1.6"/></svg></span><span class="t-ket">N</span></h1>
   <div class="subtitle">TAP CLICKER</div>
   <div class="credit">Developed by Yena Chang</div>
 
@@ -325,19 +303,19 @@
   <!-- electric charge gauge -->
   <div class="charge" id="charge">
     <div class="charge-track">
+      <div class="charge-bright">
+        <div class="energy"></div>
+        <svg class="bolt-bright" viewBox="0 0 400 44" preserveAspectRatio="none">
+          <polyline class="glow" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
+          <polyline class="core" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
+        </svg>
+      </div>
+      <div class="charge-empty"></div>
       <svg class="bolt-dim" viewBox="0 0 400 44" preserveAspectRatio="none">
         <polyline points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/></svg>
-      <div class="charge-fill" id="chargeFill">
-        <div class="charge-bright">
-          <div class="energy"></div>
-          <svg class="bolt-bright" viewBox="0 0 400 44" preserveAspectRatio="none">
-            <polyline class="glow" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
-            <polyline class="core" points="0,22 24,10 44,30 70,8 92,26 120,12 150,32 180,9 210,28 240,14 270,30 300,10 330,26 360,12 388,24 400,20"/>
-          </svg>
-        </div>
-      </div>
     </div>
-    <div class="bolt-tip" id="boltTip">&#9889;</div>
+    <div class="charge-surge"></div>
+    <div class="bolt-tip-track" id="boltTip"><div class="bolt-tip">&#9889;</div></div>
   </div>
   <div class="next-label" id="nextLabel">CHARGE UP!</div>
   <div class="milestone" id="milestone"></div>
@@ -351,6 +329,7 @@
 
   <div class="hint">TAP THE MON TO POP &mdash; 1 PER PRESS</div>
   <div class="danger" aria-label="경고">
+    <div class="danger-glow" aria-hidden="true"></div>
     <div class="danger-text">
       <div class="danger-msg">해킹 즉시<br>컴공 26 <span class="hit">장예나</span>와<br><span class="yacha">인경호 맨손 야차</span></div>
     </div>
@@ -380,7 +359,7 @@
   const totalEl=$('total'), ppsEl=$('pps'), myRankEl=$('myRank');
   const milestoneEl=$('milestone'), nextLabel=$('nextLabel');
   const monBtn=$('monBtn'), toast=$('toast');
-  const charge=$('charge'), chargeFill=$('chargeFill'), boltTip=$('boltTip');
+  const charge=$('charge'), boltTip=$('boltTip');
   $('playerName').value = playerName;
 
   const milestones=[[10,'\u26A1'],[50,'\uD83D\uDD25'],[100,'\uD83D\uDC9C'],[500,'\uD83D\uDC7E'],[1000,'\uD83C\uDF1F'],[5000,'\uD83D\uDC51']];
@@ -395,15 +374,11 @@
       const lo=prev?prev[0]:0; pct=Math.min(((count-lo)/(next[0]-lo))*100,100);
       nextLabel.textContent=(next[0]-count)+' POPS TO '+next[1];
     }else{ pct=100; nextLabel.textContent='MAX CHARGE \uD83D\uDC51'; }
-    chargeFill.style.width=pct+'%';
-    boltTip.style.left=pct+'%'; boltTip.classList.add('on');
+    charge.style.setProperty('--empty-ratio',1-pct/100);
+    charge.style.setProperty('--tip-offset',(pct-100)+'%'); boltTip.classList.add('on');
     const em=getMilestone(count);
     if(em) milestoneEl.textContent=em;
   }
-
-  // keep the lightning geometry at full-bar width so the fill reveals it left->right
-  function sizeCharge(){ charge.style.setProperty('--barw', charge.clientWidth+'px'); }
-  sizeCharge(); window.addEventListener('resize', sizeCharge);
 
   function showToast(msg){ toast.textContent=msg; toast.classList.add('show');
     setTimeout(()=>toast.classList.remove('show'),1400); }
@@ -493,8 +468,8 @@
       const lo=prev?prev[0]:0; pct=Math.min(((count-lo)/(next[0]-lo))*100,100);
       nextLabel.textContent=(next[0]-count)+' POPS TO '+next[1];
     }else{ pct=100; nextLabel.textContent='MAX CHARGE \uD83D\uDC51'; }
-    chargeFill.style.width=pct+'%';
-    boltTip.style.left=pct+'%'; boltTip.classList.add('on');
+    charge.style.setProperty('--empty-ratio',1-pct/100);
+    charge.style.setProperty('--tip-offset',(pct-100)+'%'); boltTip.classList.add('on');
     // electric surge flash
     charge.classList.add('surge');
     if(surgeTimer) clearTimeout(surgeTimer);
@@ -521,7 +496,8 @@
   monBtn.addEventListener('pointerdown',e=>{ e.preventDefault(); pop(e.clientX,e.clientY); }, {passive:false});
 
   setInterval(()=>{const now=Date.now(); recentPops=recentPops.filter(t=>now-t<1000);
-    ppsEl.textContent=recentPops.length;},200);
+    const pps=recentPops.length;
+    if(ppsEl.textContent!==String(pps)) ppsEl.textContent=pps;},200);
 
   document.addEventListener('dblclick', e=>e.preventDefault(), {passive:false});
 
