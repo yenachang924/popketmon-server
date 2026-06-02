@@ -371,7 +371,9 @@
     setTimeout(()=>toast.classList.remove('show'),1400); }
   function setName(){
     const v=$('playerName').value.trim();
-    if(v){playerName=v; localStorage.setItem('popkemon_name',v); showToast('NAME SET: '+v); fetchMyRank();}
+    if(v){playerName=v; localStorage.setItem('popkemon_name',v); showToast('NAME SET: '+v); fetchMyRank();
+      gtag('event', 'set_name', { name_length: v.length });
+    }
   }
   $('saveName').addEventListener('click',setName);
   $('playerName').addEventListener('keydown',e=>{ if(e.key==='Enter') setName(); });
@@ -399,6 +401,7 @@
     try{ await fetch(API+'/pop',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({user_id:USER_ID, name:playerName, count})});
       $('serverStatus').textContent='ONLINE'; fetchMyRank();
+      gtag('event', 'pop_batch', { value: count });
     }catch(e){ $('serverStatus').textContent='OFFLINE'; }
   }
   // 서버 기록을 게임에 반영. count는 절대 줄지 않게 MAX로 합침.
