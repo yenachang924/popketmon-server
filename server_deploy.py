@@ -202,21 +202,6 @@ async def reset_score(user_id: str):
     return {"error": "플레이어 없음"}
 
 
-# ── (임시) 전체 랭킹 초기화 — 행사 시작 전 1회용. 사용 후 반드시 제거할 것! ──
-# 브라우저 주소창에서 호출할 수 있도록 GET. 비밀 키가 맞아야만 동작한다.
-RESET_SECRET = "popkemon-clear-9x7q2"   # ← 본인만 아는 값으로 바꾸세요
-
-@app.get("/reset_all/{secret}")
-async def reset_all(secret: str):
-    if secret != RESET_SECRET:
-        return {"error": "권한 없음"}
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute("TRUNCATE scores, pop_logs")
-        conn.commit()
-    return {"ok": True, "message": "전체 초기화됨"}
-
-
 @app.get("/stats")
 async def get_stats():
     """서버 전체 통계"""
