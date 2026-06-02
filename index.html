@@ -84,7 +84,7 @@
     transform:rotate(12deg); transform-origin:50% 75%;
     margin:0 .04em 0 .02em;
     text-shadow:0 0 12px rgba(255,230,0,1), 0 0 34px rgba(255,230,0,.68), 0 0 56px rgba(226,59,255,.52);
-    animation:bigPbob 2.6s ease-in-out infinite;
+    animation:none;
   }
   @keyframes bigPbob{50%{transform:rotate(12deg) translateY(-4px)}}
 
@@ -131,7 +131,7 @@
     box-shadow:0 10px 18px rgba(0,0,0,.42), 0 0 18px rgba(226,59,255,.32);
     pointer-events:none}
   .mon-img{width:100%; height:100%; object-fit:contain;
-    animation:idleFloat 3s ease-in-out infinite; transition:transform .08s var(--ease); pointer-events:none;
+    animation:none; transition:transform .08s var(--ease); pointer-events:none;
     will-change:transform; transform:translateZ(0); backface-visibility:hidden}
   @keyframes idleFloat{50%{transform:translate3d(0,-10px,0)}}
   .mon-btn.pop .mon-img{animation:none; transform:scale(.88) rotate(-3deg)}
@@ -153,20 +153,19 @@
     border:1.5px solid var(--line);
     box-shadow:inset 0 0 14px rgba(123,44,255,.35)}
   .bolt-dim{position:absolute; inset:0; width:100%; height:100%; opacity:.5; z-index:3}
-  .bolt-dim polyline{fill:none; stroke:var(--purple); stroke-width:2;
-    filter:drop-shadow(0 0 3px var(--purple)); opacity:.7}
+  .bolt-dim polyline{fill:none; stroke:rgba(123,44,255,.8); stroke-width:2.6;
+    opacity:.7}
   .charge-bright{position:absolute; inset:0; z-index:1; overflow:hidden}
   .energy{position:absolute; top:0; bottom:0; left:-200%; width:300%;
     background:repeating-linear-gradient(90deg, var(--purple) 0%, var(--magenta) 30%,
       var(--magenta-2) 48%, var(--yellow) 66.667%);
-    animation:flow 1.1s linear infinite; opacity:.9; will-change:transform;
+    animation:none; opacity:.9;
     box-shadow:inset 0 0 18px rgba(255,230,0,.4)}
   @keyframes flow{to{transform:translate3d(66.667%,0,0)}}
   .bolt-bright{position:absolute; inset:0; width:100%; height:100%}
-  .bolt-bright .glow{fill:none; stroke:var(--magenta-2); stroke-width:5; opacity:.25;
-    filter:drop-shadow(0 0 4px var(--magenta))}
+  .bolt-bright .glow{fill:none; stroke:rgba(255,43,214,.45); stroke-width:6.4; opacity:.32}
   .bolt-bright .core{fill:none; stroke:var(--yellow); stroke-width:2.4; stroke-linecap:round;
-    filter:drop-shadow(0 0 5px var(--yellow))}
+    opacity:.95}
   @keyframes flowD{to{stroke-dashoffset:-210}}
   @keyframes crackle{0%{opacity:1}50%{opacity:.5}100%{opacity:.85}}
   .charge-empty{position:absolute; inset:0; z-index:2; transform:scaleX(var(--empty-ratio));
@@ -180,8 +179,8 @@
   .bolt-tip-track{position:absolute; inset:0; z-index:4; transform:translate3d(var(--tip-offset),0,0);
     transition:transform .25s var(--ease); will-change:transform; pointer-events:none}
   .bolt-tip{position:absolute; top:50%; right:0; transform:translate(50%,-50%) scale(0);
-    font-size:1.3rem; filter:drop-shadow(0 0 8px var(--yellow));
-    animation:tipFlick .18s steps(2) infinite}
+    font-size:1.3rem; text-shadow:0 0 10px rgba(255,230,0,.75);
+    animation:none}
   .bolt-tip-track.on .bolt-tip{transform:translate(50%,-50%) scale(1)}
   @keyframes tipFlick{50%{opacity:.6}}
   .next-label{font-size:.58rem; color:var(--muted); letter-spacing:2px; margin-top:8px}
@@ -198,7 +197,7 @@
     background-size:300% 100%;
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     -webkit-mask-composite:xor; mask-composite:exclude;
-    animation:goldShimmer 2.4s ease-in-out infinite; will-change:opacity; pointer-events:none}
+    animation:none; pointer-events:none}
   @keyframes goldShimmer{50%{opacity:.45}}
   .rank-head h2{font-weight:900; font-size:.8rem; letter-spacing:3px; color:var(--magenta);
     text-shadow:0 0 10px rgba(226,59,255,.6); margin-bottom:12px}
@@ -246,7 +245,7 @@
     box-shadow:0 0 26px rgba(226,59,255,.65), inset 0 0 32px rgba(226,59,255,.24)}
   .danger-glow{position:absolute; inset:0; z-index:1; pointer-events:none;
     box-shadow:inset 0 0 38px rgba(255,45,149,.42);
-    opacity:.28; animation:dangerPulse 1.5s ease-in-out infinite; will-change:opacity}
+    opacity:.28; animation:none}
   @keyframes dangerPulse{50%{opacity:1}}
   .danger::before,.danger::after{content:""; position:absolute; left:0; right:0; height:9px; z-index:3;
     background:repeating-linear-gradient(45deg,#e23bff 0 14px,#ff2d95 14px 26px,#e23bff 26px 38px,#ff1f3d 38px 44px); opacity:.95}
@@ -258,8 +257,8 @@
   .danger-photo{position:relative; z-index:2; flex:0 0 auto; height:200px; aspect-ratio:2002/3088; border-radius:10px; pointer-events:none;
     background-position:center; background-size:cover; background-repeat:no-repeat;
     box-shadow:0 0 16px rgba(226,59,255,.55), inset 0 0 0 1px rgba(226,59,255,.45);
-    filter:grayscale(.12) contrast(1.05) saturate(1.2) brightness(.98);
-    animation:photoThrob 1.8s ease-in-out infinite; will-change:opacity}
+    opacity:.98;
+    animation:none}
   @keyframes photoThrob{50%{opacity:.86}}
   .danger-msg{font-weight:900; line-height:1.5; color:#ffe3f7; letter-spacing:.5px;
     font-size:clamp(1rem,4.6vw,1.25rem); text-shadow:0 0 4px #1d0420,0 0 10px rgba(226,59,255,.9)}
@@ -267,7 +266,7 @@
   .danger-msg .yacha{display:inline-block; white-space:nowrap; margin-top:12px;
     font-size:clamp(1.2rem,6vw,1.75rem); color:#ffe600; letter-spacing:1px;
     text-shadow:0 0 6px #1d0420,0 0 12px #ffe600,0 0 26px #ffd400,0 0 44px #ff8a00;
-    transform:rotate(-3deg); animation:yachaShake .08s steps(2) infinite; will-change:transform}
+    transform:rotate(-3deg); animation:none}
   @keyframes yachaShake{0%,100%{transform:rotate(-3deg) translate(0,0)}50%{transform:rotate(-3deg) translate(2px,-2px)}}
 </style>
 </head>
