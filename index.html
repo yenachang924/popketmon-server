@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-0:#080410; --bg-1:#11061f;
+    --bg-0:#10051c; --bg-1:#24083b;
     --surface:#190a2b; --surface-2:#23103c; --line:#3d1b66;
     --magenta:#e23bff; --magenta-2:#ff2bd6; --purple:#7b2cff; --violet:#2a0a4a;
     --yellow:#ffe600; --yellow-soft:#ffd400;
@@ -27,37 +27,17 @@
     touch-action:manipulation; -ms-touch-action:manipulation; overscroll-behavior:none;
     font-variant-numeric:tabular-nums; letter-spacing:.5px;
   }
-  /* cyberpunk atmosphere: neon glows + perspective grid floor */
+  /* cyberpunk atmosphere: purple backdrop */
   body::before{
     content:""; position:fixed; inset:0; z-index:-3;
-    background:
-      radial-gradient(60% 45% at 50% 6%, rgba(226,59,255,.22), transparent 70%),
-      radial-gradient(55% 45% at 88% 78%, rgba(123,44,255,.20), transparent 72%),
-      radial-gradient(45% 40% at 8% 70%, rgba(255,230,0,.06), transparent 70%),
-      linear-gradient(180deg,var(--bg-1),var(--bg-0));
+    background:linear-gradient(180deg,var(--bg-1),var(--bg-0));
   }
-  body::after{
-    content:""; position:fixed; left:-20%; right:-20%; bottom:-10%; height:55%;
-    z-index:-3; pointer-events:none; opacity:.35;
-    background-image:
-      linear-gradient(90deg, rgba(226,59,255,.5) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(226,59,255,.4) 1px, transparent 1px);
-    background-size:42px 42px;
-    transform:perspective(340px) rotateX(64deg);
-    transform-origin:bottom center;
-    mask-image:linear-gradient(to top, #000, transparent);
-    -webkit-mask-image:linear-gradient(to top, #000, transparent);
-  }
-  .scan{position:fixed; inset:0; z-index:-1; pointer-events:none;
-    background:repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
-    mix-blend-mode:multiply; opacity:.5}
-
   /* canary-yellow lightning watermark: enters off the top-right corner, sweeps down-left */
   .bg-bolt{position:fixed; top:-6vh; right:-6vw; width:90vmax; height:90vmax;
     will-change:transform;
     z-index:-2; opacity:.2; pointer-events:none}
   .bg-bolt svg{width:100%; height:100%; display:block}
-  .bg-bolt path{fill:#ffef00}
+  .bg-bolt path{fill:#cfc400}
 
   .stage{width:100%; max-width:380px; display:flex; flex-direction:column; align-items:center; position:relative}
 
@@ -275,7 +255,6 @@
     <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
   </svg>
 </div>
-<div class="scan"></div>
 <div class="stage">
   <h1 class="title" aria-label="POPKEMON"><span class="t-pop" data-text="PO">PO</span><span class="t-bigP">P</span><span class="t-ket">KEM</span><span class="t-ball" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="ballClip"><circle cx="50" cy="50" r="47"/></clipPath></defs><g clip-path="url(#ballClip)"><rect x="0" y="50" width="100" height="50" fill="#f3e6ff"/><rect x="0" y="0" width="100" height="50" fill="#6a2bb5"/><circle cx="30" cy="24" r="9" fill="#ff2bd6"/><circle cx="67" cy="30" r="6" fill="#ff2bd6"/><circle cx="52" cy="13" r="4.5" fill="#e23bff"/><path d="M38 34V14h5l7 10 7-10h5v20h-5V22l-7 9-7-9v12z" fill="#fff" transform="translate(10 4.8) scale(.8)"/><rect x="0" y="44" width="100" height="12" fill="#1a0a2e"/></g><circle cx="50" cy="50" r="47" fill="none" stroke="#1a0a2e" stroke-width="5"/><circle cx="50" cy="50" r="14" fill="#1a0a2e"/><circle cx="50" cy="50" r="10" fill="#f3e6ff"/><circle cx="50" cy="50" r="5" fill="#fff" stroke="#1a0a2e" stroke-width="1.6"/></svg></span><span class="t-ket">N</span></h1>
   <div class="subtitle">TAP CLICKER</div>
