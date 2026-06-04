@@ -41,6 +41,10 @@ app.add_middleware(
 # 웹 서비스의 환경변수 DATABASE_URL 로 넣으면 됨. (로컬 테스트 시 본인 Postgres URL)
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# 자동 로그 정리 설정
+LOG_RETENTION_DAYS = 30      # 이 일수보다 오래된 pop_logs는 정리 대상
+CLEANUP_EVERY_N_POPS = 200   # /pop이 대략 이 횟수마다 한 번씩 정리 시도
+
 # ── 연결 풀 ──
 # 매 요청마다 새 연결을 열지 않고, 미리 만든 연결 몇 개를 돌려씀.
 # Render 무료 Postgres는 동시 연결이 빡빡하므로 최대치를 작게 잡는다.
@@ -141,11 +145,27 @@ async def record_pop(req: PopRequest):
                 "count = GREATEST(scores.count, EXCLUDED.count)",
                 (req.user_id, req.name, req.count)
             )
-            # 로그도 한 줄 남기기
+            # 로그도 한 줄 남기기 (id를 받아서 정리 주기 판단에 사용)
             cur.execute(
-                "INSERT INTO pop_logs (user_id, name, count, time) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO pop_logs (user_id, name, count, time) "
+                "VALUES (%s, %s, %s, %s) RETURNING id",
                 (req.user_id, req.name, req.count, datetime.now().isoformat())
             )
+            new_id = cur.fetchone()["id"]
+
+            # 가끔씩(대략 CLEANUP_EVERY_N_POPS 회마다) 오래된 로그 정리.
+            # 방금 받은 id로 주기를 판단 → 별도 COUNT 쿼리 불필요.
+            # 정리가 실패해도 /pop 본 기능엔 영향 없도록 try로 감쌈.
+            if new_id % CLEANUP_EVERY_N_POPS == 0:
+                try:
+                    cur.execute(
+                        "DELETE FROM pop_logs "
+                        "WHERE (time)::timestamp < now() - make_interval(days => %s)",
+                        (LOG_RETENTION_DAYS,)
+                    )
+                    print(f"🧹 오래된 로그 정리 실행 (>{LOG_RETENTION_DAYS}일)")
+                except Exception as e:
+                    print(f"⚠️ 로그 정리 건너뜀(정상 동작엔 영향 없음): {e}")
         conn.commit()
     return {"ok": True, "your_count": req.count}
 
