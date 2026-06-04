@@ -41,13 +41,26 @@ app.add_middleware(
 # 웹 서비스의 환경변수 DATABASE_URL 로 넣으면 됨. (로컬 테스트 시 본인 Postgres URL)
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# ── 연결 풀 ──
+# 매 요청마다 새 연결을 열지 않고, 미리 만든 연결 몇 개를 돌려씀.
+# Render 무료 Postgres는 동시 연결이 빡빡하므로 최대치를 작게 잡는다.
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL 환경변수가 설정되지 않았습니다.")
 
-# ── DB 연결 헬퍼 ──
+pool = ConnectionPool(
+    DATABASE_URL,
+    min_size=1,            # 평소 유지할 연결 수
+    max_size=8,            # 동시 최대 연결 수 (무료 한도 안에서 여유 있게)
+    max_idle=60,           # 60초 놀면 여분 연결 정리
+    kwargs={"row_factory": dict_row},
+    open=True,
+)
+
+
+# ── DB 연결 헬퍼 (풀에서 빌려옴) ──
 def get_db():
-    """Postgres에 연결. 결과를 row["name"]처럼 이름으로 꺼낼 수 있게 dict_row 사용."""
-    if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL 환경변수가 설정되지 않았습니다.")
-    return psycopg.connect(DATABASE_URL, row_factory=dict_row)
+    """풀에서 연결 하나를 빌려온다. with 블록을 나가면 자동으로 풀에 반납됨."""
+    return pool.connection()
 
 
 # ── 서버 시작 시 표 만들기 (없을 때만) ──
