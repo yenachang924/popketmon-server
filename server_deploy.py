@@ -63,6 +63,7 @@ def init_db():
                 )
             """)
             # 클릭 로그용 표 (선택사항이지만 /stats에서 씀)
+            # 클릭 로그용 표 (선택사항이지만 /stats에서 씀)
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS pop_logs (
                     id BIGSERIAL PRIMARY KEY,
@@ -72,6 +73,15 @@ def init_db():
                     time TEXT
                 )
             """)
+            # 분석 쿼리 가속용 인덱스 (이미 있으면 무시됨)
+            cur.execute(
+                "CREATE INDEX IF NOT EXISTS idx_pop_logs_user_time "
+                "ON pop_logs (user_id, time)"
+            )
+            cur.execute(
+                "CREATE INDEX IF NOT EXISTS idx_scores_count "
+                "ON scores (count DESC)"
+            )
         conn.commit()
 
 
