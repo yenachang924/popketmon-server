@@ -21,7 +21,7 @@
 import os
 import psycopg
 from psycopg.rows import dict_row
-from fastapi import FastAPI
+from psycopg_pool import ConnectionPool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
