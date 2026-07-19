@@ -121,7 +121,7 @@ class PopRequest(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 async def serve_html():
     """팝케몬 게임 페이지 (파일명은 본인 환경에 맞게)"""
-    with open("popketmon.html", "r", encoding="utf-8") as f:
+    with open("index.html", "r", encoding="utf-8") as f:
         return f.read()
 
 
