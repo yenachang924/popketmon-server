@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 환경 변수 (DATABASE_URL, ANALYTICS_SECRET 등)
+.env
+
+# 에디터
+.vscode/
+.idea/
