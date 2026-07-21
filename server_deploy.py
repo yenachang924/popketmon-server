@@ -19,10 +19,12 @@
 """
 
 import os
+import secrets
 import psycopg
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -37,6 +39,36 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── 운영/분석 엔드포인트 보호 (HTTP Basic) ──
+# fail-closed: 자격증명이 설정돼 있지 않으면 열어주지 않고 503으로 거부한다.
+# 게임 API(/pop, /ranking)는 이 검사와 무관하므로 설정을 깜빡해도 게임은 죽지 않는다.
+# auto_error=False: 기본값(True)이면 자격증명이 없을 때 FastAPI가 먼저 401을 던져
+#                   "설정 누락(503)"과 "비밀번호 틀림(401)"을 구분할 수 없다.
+_security = HTTPBasic(auto_error=False)
+
+
+def require_admin(credentials: HTTPBasicCredentials = Depends(_security)):
+    user = os.environ.get("ANALYTICS_USER", "admin")
+    # ANALYTICS_PASSWORD 우선, 없으면 기존 ANALYTICS_SECRET 으로 폴백(환경변수 무변경 배포용)
+    password = os.environ.get("ANALYTICS_PASSWORD") or os.environ.get("ANALYTICS_SECRET")
+    if not password:
+        raise HTTPException(
+            status_code=503,
+            detail="분석 인증이 설정되지 않았습니다. ANALYTICS_PASSWORD 환경변수를 설정하세요.",
+        )
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="인증 필요",
+                            headers={"WWW-Authenticate": "Basic"})
+    ok_user = secrets.compare_digest(credentials.username.encode(), user.encode())
+    ok_pw = secrets.compare_digest(credentials.password.encode(), password.encode())
+    if not (ok_user and ok_pw):   # 두 비교를 먼저 계산해 단축평가로 인한 타이밍 누출 방지
+        raise HTTPException(status_code=401, detail="인증 실패",
+                            headers={"WWW-Authenticate": "Basic"})
+
+
+# 이 라우터에 붙는 엔드포인트는 자동으로 인증이 걸린다. 파일 맨 아래에서 app에 등록.
+admin_router = APIRouter(dependencies=[Depends(require_admin)])
 
 # Render Postgres 연결 문자열. 대시보드의 DB → "Internal Database URL"을 복사해
 # 웹 서비스의 환경변수 DATABASE_URL 로 넣으면 됨. (로컬 테스트 시 본인 Postgres URL)
@@ -229,7 +261,7 @@ async def get_my_rank(user_id: str):
     }
 
 
-@app.delete("/reset/{user_id}")
+@admin_router.delete("/reset/{user_id}")
 async def reset_score(user_id: str):
     """
     특정 플레이어 점수 초기화 (user_id 기준)
@@ -248,7 +280,7 @@ async def reset_score(user_id: str):
 
 
 
-@app.get("/stats")
+@admin_router.get("/stats")
 async def get_stats():
     """서버 전체 통계"""
     with get_db() as conn:
@@ -292,22 +324,12 @@ async def get_stats():
 #     (Render 서버 기본 시간대가 UTC라서 보통 맞습니다. 혹시 표가 9시간 어긋나면 알려줘요.)
 # =============================================================================
 
-import os
 import json
-import psycopg
-from psycopg.rows import dict_row
-from fastapi import HTTPException
-from fastapi.responses import HTMLResponse
 
 # 방문(세션) 구분 기준: 같은 유저의 기록이 이 시간 이상 끊기면 "새 방문"으로 셈
 SESSION_GAP_MINUTES = 30
 
-# 선택적 보호: Render 환경변수 ANALYTICS_SECRET 를 설정하면
-# 분석/대시보드 접근 시 ?key=값 을 요구합니다. 설정 안 하면 누구나 열람 가능.
-def _analytics_check_key(key: str):
-    secret = os.environ.get("ANALYTICS_SECRET")
-    if secret and key != secret:
-        raise HTTPException(status_code=403, detail="invalid key")
+# 접근 보호는 파일 상단의 require_admin / admin_router 가 담당한다.
 
 
 def _analytics_query(sql: str, params=None):
@@ -333,9 +355,8 @@ _VALID = "time IS NOT NULL AND time <> ''"
 # ---------------------------------------------------------------------------
 # 1) 원본 확인용 (time 형식이 의심되면 제일 먼저 이걸 열어보세요)
 # ---------------------------------------------------------------------------
-@app.get("/analytics/raw")
-def analytics_raw(limit: int = 10, key: str = ""):
-    _analytics_check_key(key)
+@admin_router.get("/analytics/raw")
+def analytics_raw(limit: int = 10):
     rows = _analytics_query(
         "SELECT id, user_id, name, count, time FROM pop_logs ORDER BY id DESC LIMIT %s",
         (limit,),
@@ -417,9 +438,8 @@ def _daily_data():
     return sorted(by_date.values(), key=lambda x: x["date"])
 
 
-@app.get("/analytics/daily")
-def analytics_daily(key: str = ""):
-    _analytics_check_key(key)
+@admin_router.get("/analytics/daily")
+def analytics_daily():
     return {"days": _daily_data()}
 
 
@@ -455,15 +475,13 @@ def _users_data():
     """)
 
 
-@app.get("/analytics/users")
-def analytics_users(key: str = ""):
-    _analytics_check_key(key)
+@admin_router.get("/analytics/users")
+def analytics_users():
     return {"users": _users_data()}
 
 
-@app.get("/analytics/user/{user_id}")
-def analytics_user(user_id: str, key: str = ""):
-    _analytics_check_key(key)
+@admin_router.get("/analytics/user/{user_id}")
+def analytics_user(user_id: str):
     rows = [u for u in _users_data() if u["user_id"] == user_id]
     summary = rows[0] if rows else None
     history = _analytics_query(f"""
@@ -610,13 +628,8 @@ _DASHBOARD_HTML = r"""
 """
 
 
-@app.get("/dashboard", response_class=HTMLResponse)
-def dashboard(key: str = ""):
-    # 보호키가 설정돼 있는데 틀리면 안내 페이지
-    secret = os.environ.get("ANALYTICS_SECRET")
-    if secret and key != secret:
-        return HTMLResponse("<h2 style='font-family:sans-serif'>🔒 키가 필요합니다: /dashboard?key=...</h2>",
-                            status_code=403)
+@admin_router.get("/dashboard", response_class=HTMLResponse)
+def dashboard():
     daily = _daily_data()
     users = _users_data()
     html = (_DASHBOARD_HTML
@@ -625,6 +638,10 @@ def dashboard(key: str = ""):
     return HTMLResponse(html)
 
 # ============================ 분석 모듈 끝 ============================
+
+# 보호 라우터를 app에 등록. 이 줄이 빠지면 위 엔드포인트가 전부 404가 된다.
+app.include_router(admin_router)
+
 # ── 서버 실행 ──
 # 로컬: python server_deploy.py → 8000번 포트 (DATABASE_URL 환경변수 필요)
 # 배포(Render): Render가 PORT 환경변수로 포트를 정해줌 → 그걸 받아서 사용

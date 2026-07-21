@@ -23,7 +23,7 @@ python server_deploy.py           # serves on $PORT, default 8000
 
 Interactive API docs (FastAPI-generated) are at `/docs`. Deployment is Render, which injects `PORT` and `DATABASE_URL` and runs the ASGI target `server_deploy:app`.
 
-Optional: set `ANALYTICS_SECRET` to require `?key=<secret>` on every `/analytics/*` and `/dashboard` request. When unset, those endpoints are fully public.
+Set `ANALYTICS_PASSWORD` (and optionally `ANALYTICS_USER`, default `admin`) to enable the operator endpoints. The legacy `ANALYTICS_SECRET` is still accepted as a password fallback when `ANALYTICS_PASSWORD` is unset.
 
 ## Architecture
 
@@ -37,6 +37,17 @@ Optional: set `ANALYTICS_SECRET` to require `?key=<secret>` on every `/analytics
 - client: `applyRecord()` only assigns the server's count when `d.count > count`
 
 Because clients post an absolute cumulative total (not a delta), any change that makes the write authoritative rather than a max would let a stale or reset device wipe a player's progress.
+
+### Public game API vs. protected operator API
+
+Routes are split across two objects and **which one you decorate with decides whether the endpoint is authenticated**:
+
+- `@app.*` — public, no auth: `GET /`, `POST /pop`, `GET /ranking`, `GET /ranking/{user_id}`. These four are exactly what `index.html` calls.
+- `@admin_router.*` — HTTP Basic required: `/stats`, `/analytics/*`, `/dashboard`, and `DELETE /reset/{user_id}` (the only endpoint that can break the monotonic-score invariant). `admin_router = APIRouter(dependencies=[Depends(require_admin)])`, so anything added to it is protected automatically — that is the point of the grouping, and new operator endpoints belong here rather than on `app`.
+
+`app.include_router(admin_router)` sits at the bottom of the file, just above `if __name__ == "__main__":`. Without that line every protected route silently 404s.
+
+`require_admin` is **fail-closed**: with neither `ANALYTICS_PASSWORD` nor `ANALYTICS_SECRET` set it returns 503 rather than allowing access. It rejects at request time, not import time, so a missing env var takes down the dashboard but leaves the game API serving. Credentials are compared with `secrets.compare_digest`, and `HTTPBasic(auto_error=False)` is deliberate — the default would emit 401 before the config check could distinguish "not configured" (503) from "wrong password" (401).
 
 ### Two tables, two very different roles
 
@@ -75,3 +86,12 @@ Sync cadence, which shapes the analytics data: the client posts to `/pop` only e
 - Render's web filesystem is ephemeral, which is why storage moved from SQLite to Postgres. Never reintroduce local-file persistence for anything that must survive a restart.
 - CORS is `allow_origins=["*"]` and there is no rate limiting or server-side validation of submitted counts — a client can post any number. Treat leaderboard values as untrusted.
 - Code comments and user-facing strings are in Korean; match that when editing.
+
+
+## 커밋 컨벤션
+- **main에 직접 커밋하지 않는다.** 항상 새 브랜치를 파서 작업하고, PR을 통해 main에 병합한다.
+- 커밋 메시지는 Conventional Commits 형식(feat/fix/docs/chore...), 제목은 한 줄, 본문에 "왜"를 적는다. (`/commit` 슬래시 커맨드 참고)
+
+## 운영 의도
+- 프론트(index.html)는 Vercel에 별도 호스팅. 이 서버는 API 전용.
+- /dashboard 는 배포 기능이 아니라 개발자(나) 혼자 보는 운영 도구. 외부 공개 계획 없음.
