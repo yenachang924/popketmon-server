@@ -88,6 +88,10 @@ Sync cadence, which shapes the analytics data: the client posts to `/pop` only e
 - Code comments and user-facing strings are in Korean; match that when editing.
 
 
+## 커밋 컨벤션
+- **main에 직접 커밋하지 않는다.** 항상 새 브랜치를 파서 작업하고, PR을 통해 main에 병합한다.
+- 커밋 메시지는 Conventional Commits 형식(feat/fix/docs/chore...), 제목은 한 줄, 본문에 "왜"를 적는다. (`/commit` 슬래시 커맨드 참고)
+
 ## 운영 의도
 - 프론트(index.html)는 Vercel에 별도 호스팅. 이 서버는 API 전용.
 - /dashboard 는 배포 기능이 아니라 개발자(나) 혼자 보는 운영 도구. 외부 공개 계획 없음.
