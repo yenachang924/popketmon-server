@@ -95,3 +95,5 @@ Sync cadence, which shapes the analytics data: the client posts to `/pop` only e
 ## 운영 의도
 - 프론트(index.html)는 Vercel에 별도 호스팅. 이 서버는 API 전용.
 - /dashboard 는 배포 기능이 아니라 개발자(나) 혼자 보는 운영 도구. 외부 공개 계획 없음.
+
+- 이 DB는 무료 티어라 30일마다 만료됨(현재 만료 ~8/21). 만료 알림 수신 시 즉시 pg_dump로 백업 후 조치.
