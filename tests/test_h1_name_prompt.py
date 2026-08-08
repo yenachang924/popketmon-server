@@ -33,6 +33,9 @@ class H1NamePromptTest(unittest.TestCase):
         self.assertNotIn('#ffd700', HTML)
         self.assertNotIn('#ffcf2e', HTML)
         self.assertNotIn('var(--yellow)', HTML)
+        self.assertIn('--accent:#d94a38', HTML)
+        self.assertIn('CHARACTER LANES', HTML)
+        self.assertIn("const medals=['01','02','03'];", HTML)
 
 
 if __name__ == "__main__":
