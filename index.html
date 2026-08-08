@@ -19,10 +19,10 @@
   :root{
     --bg-0:#070b11; --bg-1:#111827;
     --mon-primary:#c94a5a; --mon-secondary:#6c6288; --mon-signal:#d7c95e; --mon-plate:#171727;
-    --surface:color-mix(in srgb, var(--mon-plate) 84%, #071214);
-    --surface-2:color-mix(in srgb, var(--mon-plate) 72%, #102a2a);
+    --surface:color-mix(in srgb, var(--mon-plate) 86%, #05080d);
+    --surface-2:color-mix(in srgb, var(--mon-plate) 74%, var(--mon-primary) 12%);
     --line:color-mix(in srgb, var(--mon-secondary) 42%, #fff8df 46%);
-    --accent:var(--mon-primary); --accent-2:color-mix(in srgb, var(--mon-primary) 78%, #fff8df);
+    --accent:var(--mon-primary); --accent-2:var(--mon-primary);
     --signal:var(--mon-signal); --violet:var(--mon-secondary);
     --reward:#fff3cf; --reward-soft:#fff8df;
     --cyan:color-mix(in srgb, var(--mon-secondary) 45%, #c8f4e0);
@@ -30,11 +30,11 @@
     --ease:cubic-bezier(.34,1.56,.64,1);
   }
 
-  body[data-mon="sneasel"]{--mon-primary:#c94a5a; --mon-secondary:#6c6288; --mon-signal:#d7c95e; --mon-plate:#171727}
-  body[data-mon="pikachu"]{--mon-primary:#f4d23e; --mon-secondary:#171717; --mon-signal:#ef3b2d; --mon-plate:#171507}
-  body[data-mon="bulbasaur"]{--mon-primary:#5dbb8c; --mon-secondary:#3c6f87; --mon-signal:#d9798e; --mon-plate:#0d2019}
-  body[data-mon="charizard"],body[data-mon="charmander"]{--mon-primary:#ed7a38; --mon-secondary:#176d72; --mon-signal:#ffd86a; --mon-plate:#1d1510}
-  body[data-mon="squirtle"]{--mon-primary:#6fb4d8; --mon-secondary:#506d99; --mon-signal:#d7b76a; --mon-plate:#0d1b24}
+  body[data-mon="sneasel"]{--bg-0:#090713; --bg-1:#201329; --mon-primary:#c94a74; --mon-secondary:#7a5aa9; --mon-signal:#d7c95e; --mon-plate:#181224; --accent-2:#c94a74}
+  body[data-mon="pikachu"]{--bg-0:#100f07; --bg-1:#2b260d; --mon-primary:#f4d23e; --mon-secondary:#181818; --mon-signal:#ef3b2d; --mon-plate:#1d1a08; --accent-2:#f4d23e}
+  body[data-mon="bulbasaur"]{--bg-0:#06100c; --bg-1:#10281f; --mon-primary:#5dbb8c; --mon-secondary:#3c6f87; --mon-signal:#d9798e; --mon-plate:#0d2019; --accent-2:#5dbb8c}
+  body[data-mon="charizard"],body[data-mon="charmander"]{--bg-0:#120905; --bg-1:#2b1409; --mon-primary:#ed7a38; --mon-secondary:#176d72; --mon-signal:#ffd86a; --mon-plate:#22130c; --accent-2:#ed7a38}
+  body[data-mon="squirtle"]{--bg-0:#061018; --bg-1:#102438; --mon-primary:#6fb4d8; --mon-secondary:#506d99; --mon-signal:#d7b76a; --mon-plate:#0d1b24; --accent-2:#6fb4d8}
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%; touch-action:manipulation; -webkit-overflow-scrolling:touch}
   body{
@@ -50,15 +50,18 @@
   body::before{
     content:""; position:fixed; inset:0; z-index:-3;
     background:
-      radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--mon-primary) 18%, transparent), transparent 34%),
+      radial-gradient(circle at 50% 17%, color-mix(in srgb, var(--mon-primary) 38%, transparent), transparent 38%),
+      radial-gradient(circle at 16% 38%, color-mix(in srgb, var(--mon-secondary) 24%, transparent), transparent 34%),
+      radial-gradient(circle at 86% 58%, color-mix(in srgb, var(--mon-signal) 14%, transparent), transparent 32%),
       linear-gradient(180deg,var(--bg-1),var(--bg-0));
   }
   body::after{content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
     background:
-      linear-gradient(115deg, transparent 0 42%, color-mix(in srgb, var(--mon-secondary) 18%, transparent) 42% 42.4%, transparent 42.4% 100%),
-      linear-gradient(90deg, color-mix(in srgb, var(--line) 18%, transparent) 1px, transparent 1px),
-      linear-gradient(0deg, color-mix(in srgb, var(--line) 12%, transparent) 1px, transparent 1px);
-    background-size:100% 100%, 54px 54px, 54px 54px; opacity:.38}
+      linear-gradient(115deg, transparent 0 38%, color-mix(in srgb, var(--mon-secondary) 30%, transparent) 38% 38.4%, transparent 38.4% 100%),
+      linear-gradient(70deg, transparent 0 62%, color-mix(in srgb, var(--mon-primary) 17%, transparent) 62% 62.35%, transparent 62.35% 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--line) 20%, transparent) 1px, transparent 1px),
+      linear-gradient(0deg, color-mix(in srgb, var(--line) 13%, transparent) 1px, transparent 1px);
+    background-size:100% 100%,100% 100%,54px 54px,54px 54px; opacity:.48}
   .bg-bolt{display:none}
 
   .stage{width:100%; max-width:520px; display:flex; flex-direction:column; align-items:center; position:relative}
@@ -69,23 +72,23 @@
   .title span{position:relative; display:inline-block}
 
   .t-ket{color:var(--accent-2);
-    text-shadow:0 0 8px rgba(240,106,79,.62), 0 0 18px rgba(240,106,79,.28)}
+    text-shadow:0 0 8px color-mix(in srgb, var(--mon-primary) 62%, transparent), 0 0 22px color-mix(in srgb, var(--mon-primary) 36%, transparent)}
 
   .t-pop{color:var(--reward-soft);
-    text-shadow:0 0 8px rgba(255,248,223,.7), 0 0 16px rgba(240,106,79,.22)}
+    text-shadow:0 0 8px rgba(255,248,223,.7), 0 0 16px color-mix(in srgb, var(--mon-primary) 30%, transparent)}
   .t-pop::before,.t-pop::after{display:none}
   .subtitle{font-size:.6rem; letter-spacing:5px; color:var(--cyan); margin-top:9px; text-shadow:0 0 8px rgba(154,248,238,.34)}
   .credit{font-size:.52rem; letter-spacing:3px; color:#fff; opacity:.52; margin-top:5px; font-weight:400}
 
   .t-bigP{display:inline-block; color:var(--reward-soft); line-height:1; margin:0 .02em;
-    text-shadow:0 0 8px rgba(255,248,223,.62), 0 0 16px rgba(217,74,56,.22); animation:none}
+    text-shadow:0 0 8px rgba(255,248,223,.62), 0 0 16px color-mix(in srgb, var(--mon-primary) 28%, transparent); animation:none}
   @keyframes bigPbob{50%{transform:none}}
 
   .t-ball{position:relative; display:inline-flex; width:.86em; height:.86em; vertical-align:-.09em; margin:0 .02em; align-items:center; justify-content:center; color:var(--accent)}
   .t-ball::before{content:""; position:absolute; inset:4%; border-radius:50%;
-    border:2px solid rgba(255,248,223,.94); box-shadow:0 0 10px rgba(255,248,223,.38),0 0 18px rgba(217,74,56,.28)}
+    border:2px solid rgba(255,248,223,.94); box-shadow:0 0 10px rgba(255,248,223,.38),0 0 18px color-mix(in srgb, var(--mon-primary) 34%, transparent)}
   .t-ball::after{content:""; position:absolute; left:50%; top:50%; width:34%; height:34%; border-radius:50%;
-    transform:translate(-50%,-50%); background:var(--bg-0); border:2px solid var(--accent); box-shadow:0 0 9px rgba(217,74,56,.42)}
+    transform:translate(-50%,-50%); background:var(--bg-0); border:2px solid var(--accent); box-shadow:0 0 9px color-mix(in srgb, var(--mon-primary) 54%, transparent)}
   .t-ball svg{position:relative; width:100%; height:100%; display:block; backface-visibility:hidden}
 
   .name-prompt{width:100%; margin-top:14px; text-align:center}
@@ -97,17 +100,17 @@
     background:var(--surface); color:var(--text); font:inherit; font-size:12px; outline:none;
     width:150px; letter-spacing:1px; transition:border-color .15s, box-shadow .15s}
   .name-row input::placeholder{color:var(--muted)}
-  .name-row input:focus{border-color:var(--accent); box-shadow:0 0 12px rgba(217,74,56,.32)}
+  .name-row input:focus{border-color:var(--accent); box-shadow:0 0 12px color-mix(in srgb, var(--mon-primary) 38%, transparent)}
   .name-row button{padding:9px 16px; border-radius:6px; cursor:pointer;
     background:var(--surface-2); color:var(--text); font:inherit; font-weight:700; font-size:12px;
     letter-spacing:1px; border:1.5px solid var(--accent); transition:transform .12s var(--ease), box-shadow .15s}
-  .name-row button:hover{box-shadow:0 0 12px rgba(217,74,56,.34)}
+  .name-row button:hover{box-shadow:0 0 12px color-mix(in srgb, var(--mon-primary) 38%, transparent)}
   .name-row button:active{transform:scale(.94)}
 
   .stats{display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:8px; width:100%; margin:16px 0 6px}
-  .chip{background:linear-gradient(180deg, rgba(24,44,39,.94), rgba(10,23,23,.94)); border:1px solid var(--line); border-radius:5px;
-    padding:10px 6px; text-align:center; box-shadow:inset 0 0 14px rgba(143,195,106,.07)}
-  .chip.hero{border-color:var(--accent); box-shadow:0 0 12px rgba(217,74,56,.22), inset 0 0 16px rgba(217,74,56,.08)}
+  .chip{background:linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 88%, transparent), color-mix(in srgb, var(--surface) 96%, transparent)); border:1px solid var(--line); border-radius:5px;
+    padding:10px 6px; text-align:center; box-shadow:inset 0 0 14px color-mix(in srgb, var(--mon-primary) 10%, transparent)}
+  .chip.hero{border-color:var(--accent); box-shadow:0 0 12px color-mix(in srgb, var(--mon-primary) 30%, transparent), inset 0 0 16px color-mix(in srgb, var(--mon-primary) 12%, transparent)}
   .chip .label{font-size:.52rem; letter-spacing:2px; color:var(--muted)}
   .chip .value{font-weight:900; font-size:1.4rem; margin-top:4px; line-height:1}
   .chip.hero .value{font-size:2rem; color:var(--reward-soft); text-shadow:0 0 8px rgba(255,248,223,.42)}
@@ -117,8 +120,9 @@
   .play-shell::before{content:""; position:absolute; left:14%; right:14%; top:24px; bottom:26px; z-index:0;
     clip-path:polygon(12% 0,88% 0,100% 50%,88% 100%,12% 100%,0 50%);
     border:1px solid color-mix(in srgb, var(--mon-secondary) 34%, transparent);
-    background:linear-gradient(135deg, color-mix(in srgb, var(--mon-primary) 10%, transparent), transparent 48%, color-mix(in srgb, var(--mon-secondary) 12%, transparent));
-    opacity:.74}
+    background:linear-gradient(135deg, color-mix(in srgb, var(--mon-primary) 21%, transparent), transparent 44%, color-mix(in srgb, var(--mon-secondary) 24%, transparent));
+    box-shadow:0 0 32px color-mix(in srgb, var(--mon-primary) 18%, transparent), inset 0 0 28px color-mix(in srgb, var(--mon-secondary) 14%, transparent);
+    opacity:.86}
   .side-stack{display:flex; flex-direction:column; gap:15px; align-items:center; z-index:2}
   .hex-module{width:62px; height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center;
     clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
@@ -133,7 +137,7 @@
   .arena{position:relative; width:100%; min-width:0; height:250px; margin:6px 0 2px;
     display:flex; align-items:center; justify-content:center; isolation:isolate}
   .platform{position:absolute; bottom:16px; width:176px; height:38px; border-radius:50%;
-    background:radial-gradient(closest-side, rgba(143,195,106,.22), rgba(217,74,56,.10) 48%, rgba(217,74,56,0) 76%);
+    background:radial-gradient(closest-side, color-mix(in srgb, var(--mon-signal) 24%, transparent), color-mix(in srgb, var(--mon-primary) 15%, transparent) 48%, transparent 76%);
     opacity:.7}
   .tap-ring{position:absolute; width:214px; height:214px; border-radius:50%;
     border:1.5px solid color-mix(in srgb, var(--mon-secondary) 48%, var(--reward-soft)); opacity:.72; pointer-events:none; box-shadow:0 0 18px color-mix(in srgb, var(--mon-primary) 18%, transparent)}
@@ -159,7 +163,7 @@
 
   .pop-text{position:fixed; z-index:50; pointer-events:none; white-space:nowrap;
     font-weight:900; font-size:1.05rem; letter-spacing:1px; color:#fff;
-    text-shadow:0 0 8px rgba(255,248,223,.64), 0 0 14px rgba(217,74,56,.28); animation:popUp .7s ease-out forwards}
+    text-shadow:0 0 8px rgba(255,248,223,.64), 0 0 14px color-mix(in srgb, var(--mon-primary) 36%, transparent); animation:popUp .7s ease-out forwards}
   @keyframes popUp{0%{opacity:1; transform:translate(-50%,0) scale(.8)}
     100%{opacity:0; transform:translate(-50%,-70px) scale(1.4)}}
   .spark{position:fixed; z-index:49; width:7px; height:7px; border-radius:50%;
@@ -170,67 +174,67 @@
   .charge{position:relative; width:100%; height:46px; margin-top:20px; --empty-ratio:1; --tip-offset:-100%;
     contain:layout}
   .charge-track{position:absolute; inset:0; border-radius:6px; overflow:hidden;
-    background:linear-gradient(180deg,#071719,#040b0c);
+    background:linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 78%, #020404), color-mix(in srgb, var(--surface) 92%, #020404));
     border:1.5px solid var(--line);
-    box-shadow:inset 0 0 14px rgba(111,255,232,.14)}
+    box-shadow:inset 0 0 14px color-mix(in srgb, var(--mon-secondary) 26%, transparent)}
   .bolt-dim{position:absolute; inset:0; width:100%; height:100%; opacity:.5; z-index:3}
-  .bolt-dim polyline{fill:none; stroke:rgba(143,195,106,.5); stroke-width:2.6;
+  .bolt-dim polyline{fill:none; stroke:color-mix(in srgb, var(--mon-secondary) 52%, var(--reward-soft)); stroke-width:2.6;
     opacity:.62}
   .charge-bright{position:absolute; inset:0; z-index:1; overflow:hidden}
   .energy{position:absolute; top:0; bottom:0; left:-200%; width:300%;
     background:linear-gradient(90deg, var(--accent), var(--signal));
     animation:none; opacity:.82;
-    box-shadow:inset 0 0 14px rgba(217,74,56,.16)}
+    box-shadow:inset 0 0 14px color-mix(in srgb, var(--mon-primary) 24%, transparent)}
   @keyframes flow{to{transform:translate3d(66.667%,0,0)}}
   .bolt-bright{position:absolute; inset:0; width:100%; height:100%}
-  .bolt-bright .glow{fill:none; stroke:rgba(217,74,56,.34); stroke-width:6.4; opacity:.24}
+  .bolt-bright .glow{fill:none; stroke:color-mix(in srgb, var(--mon-primary) 50%, transparent); stroke-width:6.4; opacity:.3}
   .bolt-bright .core{fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round;
     opacity:.82}
   @keyframes flowD{to{stroke-dashoffset:-210}}
   @keyframes crackle{0%{opacity:1}50%{opacity:.5}100%{opacity:.85}}
   .charge-empty{position:absolute; inset:0; z-index:2; transform:scaleX(var(--empty-ratio));
     transform-origin:right center; transition:transform .25s var(--ease); will-change:transform;
-    background:linear-gradient(180deg,#071719,#040b0c)}
+    background:linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 78%, #020404), color-mix(in srgb, var(--surface) 92%, #020404))}
   .charge-surge{position:absolute; inset:0; z-index:4; opacity:0; pointer-events:none;
     border-radius:6px;
-    box-shadow:0 0 18px rgba(217,74,56,.34), inset 0 0 16px rgba(143,195,106,.16);
+    box-shadow:0 0 18px color-mix(in srgb, var(--mon-primary) 42%, transparent), inset 0 0 16px color-mix(in srgb, var(--mon-signal) 18%, transparent);
     transition:opacity .12s; will-change:opacity}
   .charge.surge .charge-surge{opacity:1}
   .bolt-tip-track{position:absolute; inset:0; z-index:4; transform:translate3d(var(--tip-offset),0,0);
     transition:transform .25s var(--ease); will-change:transform; pointer-events:none}
   .bolt-tip{position:absolute; top:50%; right:0; transform:translate(50%,-50%) scale(0);
-    font-size:1.3rem; color:var(--reward-soft); text-shadow:0 0 10px rgba(217,74,56,.42);
+    font-size:1.3rem; color:var(--reward-soft); text-shadow:0 0 10px color-mix(in srgb, var(--mon-primary) 48%, transparent);
     animation:none}
   .bolt-tip-track.on .bolt-tip{transform:translate(50%,-50%) scale(1)}
   @keyframes tipFlick{50%{opacity:.6}}
   .next-label{font-size:.58rem; color:var(--muted); letter-spacing:2px; margin-top:8px}
 
-  .milestone{font-size:1.25rem; min-height:1.7rem; margin-top:4px; color:var(--reward); text-shadow:0 0 10px rgba(217,74,56,.18)}
+  .milestone{font-size:1.25rem; min-height:1.7rem; margin-top:4px; color:var(--reward); text-shadow:0 0 10px color-mix(in srgb, var(--mon-primary) 24%, transparent)}
   .milestone.bump{animation:bump .45s var(--ease)}
   @keyframes bump{0%,100%{transform:scale(1)}45%{transform:scale(1.6) rotate(8deg)}}
 
-  .rank-panel{position:relative; width:100%; margin-top:22px; background:linear-gradient(180deg, rgba(24,44,39,.96), rgba(7,18,20,.96));
+  .rank-panel{position:relative; width:100%; margin-top:22px; background:linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 92%, transparent), color-mix(in srgb, var(--surface) 98%, transparent));
     border:1.5px solid var(--line); border-radius:5px; padding:14px 12px;
-    box-shadow:0 0 18px rgba(143,195,106,.1), inset 0 0 16px rgba(217,74,56,.06)}
+    box-shadow:0 0 18px color-mix(in srgb, var(--mon-primary) 16%, transparent), inset 0 0 16px color-mix(in srgb, var(--mon-primary) 10%, transparent)}
   .rank-panel::before{display:none}
   @keyframes goldShimmer{50%{opacity:.45}}
   .rank-head{display:flex; align-items:center; justify-content:space-between; gap:12px}
   .rank-head h2{font-weight:900; font-size:.78rem; letter-spacing:3px; color:var(--accent-2);
-    text-shadow:0 0 8px rgba(217,74,56,.32); margin-bottom:12px}
+    text-shadow:0 0 8px color-mix(in srgb, var(--mon-primary) 40%, transparent); margin-bottom:12px}
   .rank-head::after{content:"CHARACTER LANES"; font-size:.48rem; color:var(--muted); letter-spacing:1.6px; margin-bottom:12px; white-space:nowrap}
   #rankList{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 8px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch}
   #rankList.server{display:block; padding:8px 0 12px; text-align:center}
   #rankList::-webkit-scrollbar{height:3px}
-  #rankList::-webkit-scrollbar-thumb{background:rgba(244,232,197,.28); border-radius:99px}
+  #rankList::-webkit-scrollbar-thumb{background:color-mix(in srgb, var(--mon-primary) 34%, rgba(244,232,197,.28)); border-radius:99px}
   .rank-item{flex:0 0 132px; min-height:82px; display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto 1fr auto; align-items:center; gap:5px 8px; padding:10px; font-size:12px;
-    letter-spacing:.5px; border:1px solid rgba(244,232,197,.22); border-radius:5px; background:rgba(7,18,20,.56); scroll-snap-align:start}
-  .rank-item:last-child{border-bottom:1px solid rgba(244,232,197,.22)}
+    letter-spacing:.5px; border:1px solid color-mix(in srgb, var(--line) 46%, transparent); border-radius:5px; background:color-mix(in srgb, var(--surface) 74%, transparent); scroll-snap-align:start}
+  .rank-item:last-child{border-bottom:1px solid color-mix(in srgb, var(--line) 46%, transparent)}
   .rank-num{width:28px; text-align:center; font-weight:900; color:var(--accent-2); grid-row:1 / span 3}
   .rank-name{color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .rank-score{font-weight:900; color:var(--reward-soft); text-shadow:0 0 8px rgba(255,248,223,.26); justify-self:end}
-  .rank-1,.rank-2,.rank-3{background:rgba(217,74,56,.08); box-shadow:inset 0 0 0 1px rgba(217,74,56,.18)}
+  .rank-1,.rank-2,.rank-3{background:color-mix(in srgb, var(--mon-primary) 12%, var(--surface)); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--mon-primary) 28%, transparent)}
   .rank-1 .rank-name,.rank-2 .rank-name,.rank-3 .rank-name{color:#fff; font-weight:900;
-    text-shadow:0 0 8px rgba(217,74,56,.18)}
+    text-shadow:0 0 8px color-mix(in srgb, var(--mon-primary) 28%, transparent)}
   .rank-1 .rank-score,.rank-2 .rank-score,.rank-3 .rank-score{color:#fff;
     text-shadow:0 0 8px rgba(255,255,255,.34)}
   .rank-1 .rank-num,.rank-2 .rank-num,.rank-3 .rank-num{font-size:17px}
@@ -239,7 +243,7 @@
   .refresh{margin-top:12px; width:100%; padding:9px; border-radius:6px; cursor:pointer;
     background:none; border:1.5px solid var(--line); color:var(--muted); font:inherit;
     font-weight:700; font-size:11px; letter-spacing:2px; transition:border-color .15s,color .15s,box-shadow .15s}
-  .refresh:hover{border-color:var(--accent); color:var(--text); box-shadow:0 0 12px rgba(217,74,56,.26)}
+  .refresh:hover{border-color:var(--accent); color:var(--text); box-shadow:0 0 12px color-mix(in srgb, var(--mon-primary) 34%, transparent)}
   .server{font-size:10px; color:var(--muted); margin-top:8px; text-align:center; letter-spacing:1px; opacity:.85}
   .hint{margin-top:16px; font-size:10px; color:rgba(244,232,197,.58); letter-spacing:1.8px}
 
@@ -247,7 +251,7 @@
     background:var(--surface-2); border:1px solid var(--accent); color:var(--text);
     padding:10px 18px; border-radius:99px; font-size:11px; font-weight:700; letter-spacing:1px;
     opacity:0; transition:opacity .25s, transform .25s var(--ease); z-index:80; pointer-events:none;
-    box-shadow:0 0 16px rgba(217,74,56,.32)}
+    box-shadow:0 0 16px color-mix(in srgb, var(--mon-primary) 38%, transparent)}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
   @media (prefers-reduced-motion: reduce){*{animation:none !important}}

@@ -34,7 +34,7 @@ class H1NamePromptTest(unittest.TestCase):
         self.assertNotIn('#ffcf2e', HTML)
         self.assertNotIn('var(--yellow)', HTML)
         self.assertIn('data-mon="sneasel"', HTML)
-        self.assertIn('--mon-primary:#c94a5a', HTML)
+        self.assertIn('--mon-primary:#c94a74', HTML)
         self.assertIn('MON_THEMES', HTML)
         self.assertIn("pikachu:{name:'PIKACHU',src:'assets/mon/pikachu.png'}", HTML)
         self.assertIn("charizard:{name:'CHARIZARD',src:'assets/mon/charizard.png'}", HTML)
