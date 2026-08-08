@@ -31,9 +31,9 @@
   }
 
   body[data-mon="sneasel"]{--mon-primary:#c94a5a; --mon-secondary:#6c6288; --mon-signal:#d7c95e; --mon-plate:#171727}
-  body[data-mon="pikachu"]{--mon-primary:#f0c84b; --mon-secondary:#8f5a35; --mon-signal:#e25247; --mon-plate:#14130d}
+  body[data-mon="pikachu"]{--mon-primary:#f4d23e; --mon-secondary:#171717; --mon-signal:#ef3b2d; --mon-plate:#171507}
   body[data-mon="bulbasaur"]{--mon-primary:#5dbb8c; --mon-secondary:#3c6f87; --mon-signal:#d9798e; --mon-plate:#0d2019}
-  body[data-mon="charmander"]{--mon-primary:#e56b3f; --mon-secondary:#7c4a32; --mon-signal:#f4c55c; --mon-plate:#20130f}
+  body[data-mon="charizard"],body[data-mon="charmander"]{--mon-primary:#ed7a38; --mon-secondary:#176d72; --mon-signal:#ffd86a; --mon-plate:#1d1510}
   body[data-mon="squirtle"]{--mon-primary:#6fb4d8; --mon-secondary:#506d99; --mon-signal:#d7b76a; --mon-plate:#0d1b24}
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%; touch-action:manipulation; -webkit-overflow-scrolling:touch}
@@ -81,7 +81,7 @@
     text-shadow:0 0 8px rgba(255,248,223,.62), 0 0 16px rgba(217,74,56,.22); animation:none}
   @keyframes bigPbob{50%{transform:none}}
 
-  .t-ball{position:relative; display:inline-flex; width:.86em; height:.86em; vertical-align:-.09em; margin:0 .02em; align-items:center; justify-content:center}
+  .t-ball{position:relative; display:inline-flex; width:.86em; height:.86em; vertical-align:-.09em; margin:0 .02em; align-items:center; justify-content:center; color:var(--accent)}
   .t-ball::before{content:""; position:absolute; inset:4%; border-radius:50%;
     border:2px solid rgba(255,248,223,.94); box-shadow:0 0 10px rgba(255,248,223,.38),0 0 18px rgba(217,74,56,.28)}
   .t-ball::after{content:""; position:absolute; left:50%; top:50%; width:34%; height:34%; border-radius:50%;
@@ -126,7 +126,7 @@
     filter:drop-shadow(0 0 6px color-mix(in srgb, var(--mon-primary) 20%, transparent)); box-shadow:inset 0 0 0 1.25px color-mix(in srgb, var(--line) 82%, transparent)}
   .hex-module .icon{font-size:1.1rem; line-height:1}
   .hex-module .label{font-size:.42rem; margin-top:5px; color:var(--reward-soft)}
-  .hex-module .meta{font-size:.46rem; margin-top:3px; color:var(--muted)}
+  .hex-module .meta{font-size:.38rem; margin-top:3px; color:var(--muted); letter-spacing:.55px; max-width:54px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .hex-module.locked{opacity:.72}
   .hex-module.primary{box-shadow:inset 0 0 0 1.5px var(--accent), 0 0 10px rgba(217,74,56,.18)}
 
@@ -152,6 +152,10 @@
     will-change:transform; transform:translateZ(0); backface-visibility:hidden}
   @keyframes idleFloat{50%{transform:translate3d(0,-10px,0)}}
   .mon-btn.pop .mon-img{animation:none; transform:scale(.88) rotate(-3deg)}
+  body[data-mon="pikachu"] .mon-img{transform:translateY(5px) scale(1.02)}
+  body[data-mon="charizard"] .mon-img{transform:translateY(6px) scale(1.08)}
+  body[data-mon="pikachu"] .mon-btn.pop .mon-img{transform:translateY(5px) scale(.9) rotate(-2deg)}
+  body[data-mon="charizard"] .mon-btn.pop .mon-img{transform:translateY(6px) scale(.96) rotate(-2deg)}
 
   .pop-text{position:fixed; z-index:50; pointer-events:none; white-space:nowrap;
     font-weight:900; font-size:1.05rem; letter-spacing:1px; color:#fff;
@@ -256,7 +260,7 @@
   </svg>
 </div>
 <div class="stage">
-  <h1 class="title" aria-label="POPKEMON"><span class="t-pop">P</span><span class="t-ball" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="41" fill="none" stroke="rgba(255,255,255,.92)" stroke-width="8"/><path d="M12 50h76" stroke="rgba(255,255,255,.74)" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="50" r="15" fill="#020808" stroke="#d94a38" stroke-width="7"/></svg></span><span class="t-bigP">P</span><span class="t-ket">KEMON</span></h1>
+  <h1 class="title" aria-label="POPKEMON"><span class="t-pop">P</span><span class="t-ball" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="41" fill="none" stroke="rgba(255,255,255,.92)" stroke-width="8"/><path d="M12 50h76" stroke="rgba(255,255,255,.74)" stroke-width="7" stroke-linecap="round"/><circle cx="50" cy="50" r="15" fill="var(--bg-0)" stroke="currentColor" stroke-width="7"/></svg></span><span class="t-bigP">P</span><span class="t-ket">KEMON</span></h1>
   <div class="subtitle">TAP CLICKER</div>
   <div class="credit">Developed by Yena Chang</div>
 
@@ -357,10 +361,25 @@
   const $ = id => document.getElementById(id);
   const totalEl=$('total'), ppsEl=$('pps'), myRankEl=$('myRank');
   const milestoneEl=$('milestone'), nextLabel=$('nextLabel');
-  const monBtn=$('monBtn'), toast=$('toast');
+  const monBtn=$('monBtn'), monImg=$('monImg'), toast=$('toast');
   const charge=$('charge'), boltTip=$('boltTip');
   $('playerName').value = playerName;
   const namePrompt=$('namePrompt'), nameRow=document.querySelector('#namePrompt .name-row');
+  const MON_THEMES={
+    sneasel:{name:'SNEASEL'},
+    pikachu:{name:'PIKACHU',src:'assets/mon/pikachu.png'},
+    charizard:{name:'CHARIZARD',src:'assets/mon/charizard.png'},
+    bulbasaur:{name:'BULBASAUR'},
+    charmander:{name:'CHARMANDER'},
+    squirtle:{name:'SQUIRTLE'}
+  };
+  const requestedMon=new URLSearchParams(location.search).get('mon') || document.body.dataset.mon || 'sneasel';
+  const activeMon=MON_THEMES[requestedMon] ? requestedMon : 'sneasel';
+  const activeMonMeta=MON_THEMES[activeMon];
+  document.body.dataset.mon=activeMon;
+  if(activeMonMeta.src) monImg.src=activeMonMeta.src;
+  monImg.alt=activeMonMeta.name.toLowerCase();
+  document.querySelector('#monSelect .meta').textContent=activeMonMeta.name;
 
   const milestones=[[10,'10'],[50,'50'],[100,'100'],[500,'500'],[1000,'1K'],[5000,'5K']];
   const getMilestone=n=>{let r='';for(const[t,e]of milestones)if(n>=t)r=e;return r;};
