@@ -29,6 +29,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 app = FastAPI(title="팝캣 API (PostgreSQL)", description="냥냥냥 - user_id 식별 + Postgres 영구 저장")
 
@@ -123,10 +124,29 @@ def init_db():
                     time TEXT
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS events (
+                    id BIGSERIAL PRIMARY KEY,
+                    user_id TEXT,
+                    event TEXT,
+                    elapsed_ms INTEGER,
+                    pop_count INTEGER,
+                    duration_s INTEGER,
+                    time TEXT
+                )
+            """)
             # 분석 쿼리 가속용 인덱스 (이미 있으면 무시됨)
             cur.execute(
                 "CREATE INDEX IF NOT EXISTS idx_pop_logs_user_time "
                 "ON pop_logs (user_id, time)"
+            )
+            cur.execute(
+                "CREATE INDEX IF NOT EXISTS idx_events_event_time "
+                "ON events (event, time)"
+            )
+            cur.execute(
+                "CREATE INDEX IF NOT EXISTS idx_events_user_time "
+                "ON events (user_id, time)"
             )
             cur.execute(
                 "CREATE INDEX IF NOT EXISTS idx_scores_count "
@@ -147,6 +167,14 @@ class PopRequest(BaseModel):
     user_id: str    # 기기 고유키 (프론트의 crypto.randomUUID()로 만든 값)
     name: str       # 플레이어 이름 (화면 표시용)
     count: int      # 현재 총 팝 수
+
+
+class EventRequest(BaseModel):
+    user_id: str
+    event: str
+    elapsed_ms: Optional[int] = None
+    pop_count: Optional[int] = None
+    duration_s: Optional[int] = None
 
 
 # ── HTML 서빙 ──
@@ -201,6 +229,42 @@ async def record_pop(req: PopRequest):
                     print(f"⚠️ 로그 정리 건너뜀(정상 동작엔 영향 없음): {e}")
         conn.commit()
     return {"ok": True, "your_count": req.count}
+
+
+ALLOWED_EVENTS = {
+    "first_visit",
+    "first_pop",
+    "pop_10",
+    "name_set",
+    "ranking_view",
+    "refresh_click",
+    "session_end",
+    "return_visit",
+}
+
+
+@app.post("/events")
+async def record_event(req: EventRequest):
+    """
+    UX 퍼널 이벤트 기록
+    POST /events
+    Body: { "user_id": "...", "event": "first_pop", "elapsed_ms": 1200, "pop_count": 1 }
+    - 추가 개인정보 없이 기존 익명 user_id만 사용한다.
+    - 운영 집계용 이벤트이며 점수 갱신과는 분리한다.
+    """
+    if req.event not in ALLOWED_EVENTS:
+        raise HTTPException(status_code=400, detail="알 수 없는 이벤트입니다")
+
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO events (user_id, event, elapsed_ms, pop_count, duration_s, time) "
+                "VALUES (%s, %s, %s, %s, %s, %s)",
+                (req.user_id, req.event, req.elapsed_ms, req.pop_count, req.duration_s,
+                 datetime.now().isoformat())
+            )
+        conn.commit()
+    return {"ok": True}
 
 
 @app.get("/ranking")
@@ -314,6 +378,7 @@ async def get_stats():
 #  추가되는 것:
 #    GET /analytics/raw            : pop_logs 원본 몇 줄 (time 형식 확인용, 가공 X)
 #    GET /analytics/daily          : 날짜별 접속자/신규/방문(세션)/클릭증가 (JSON)
+#    GET /analytics/funnel         : UX 퍼널 이벤트 일자별 집계 (JSON)
 #    GET /analytics/users          : 유저별 클릭/이름변경/방문/활동일 (JSON)
 #    GET /analytics/user/{user_id} : 특정 유저 상세 + 이름 사용 이력 (JSON)
 #    GET /dashboard                : 위 데이터를 네온 테마로 보여주는 대시보드 페이지(HTML)
@@ -443,6 +508,78 @@ def analytics_daily():
     return {"days": _daily_data()}
 
 
+def _rate(numerator, denominator):
+    if not denominator:
+        return None
+    return round(float(numerator or 0) / float(denominator), 4)
+
+
+def _funnel_data():
+    rows = _analytics_query(f"""
+        WITH base AS (
+            SELECT user_id, event, elapsed_ms, pop_count, duration_s,
+                   to_char({_KST}, 'YYYY-MM-DD') AS d
+            FROM events WHERE {_VALID}
+        )
+        SELECT d AS date,
+               count(DISTINCT user_id) FILTER (WHERE event = 'first_visit') AS visitors,
+               count(DISTINCT user_id) FILTER (WHERE event = 'return_visit') AS return_visitors,
+               count(DISTINCT user_id) FILTER (WHERE event = 'first_pop') AS first_pops,
+               count(DISTINCT user_id) FILTER (WHERE event = 'pop_10') AS pop_10s,
+               count(DISTINCT user_id) FILTER (WHERE event = 'name_set') AS name_sets,
+               count(DISTINCT user_id) FILTER (WHERE event = 'ranking_view') AS ranking_views,
+               count(*) FILTER (WHERE event = 'refresh_click') AS refresh_clicks,
+               count(*) FILTER (WHERE event = 'session_end') AS session_ends,
+               percentile_cont(0.5) WITHIN GROUP (ORDER BY elapsed_ms)
+                   FILTER (WHERE event = 'first_pop' AND elapsed_ms IS NOT NULL) AS median_first_pop_ms,
+               percentile_cont(0.5) WITHIN GROUP (ORDER BY elapsed_ms)
+                   FILTER (WHERE event = 'name_set' AND elapsed_ms IS NOT NULL) AS median_name_set_ms,
+               percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_s)
+                   FILTER (WHERE event = 'session_end' AND duration_s IS NOT NULL) AS median_session_seconds,
+               COALESCE(sum(pop_count) FILTER (WHERE event = 'session_end'), 0) AS total_session_pops
+        FROM base
+        GROUP BY d
+        ORDER BY d;
+    """)
+
+    data = []
+    for r in rows:
+        visitors = int(r["visitors"] or 0)
+        first_pops = int(r["first_pops"] or 0)
+        pop_10s = int(r["pop_10s"] or 0)
+        name_sets = int(r["name_sets"] or 0)
+        ranking_views = int(r["ranking_views"] or 0)
+        return_visitors = int(r["return_visitors"] or 0)
+        session_ends = int(r["session_ends"] or 0)
+        total_session_pops = int(r["total_session_pops"] or 0)
+        data.append({
+            "date": r["date"],
+            "visitors": visitors,
+            "return_visitors": return_visitors,
+            "first_pops": first_pops,
+            "pop_10s": pop_10s,
+            "name_sets": name_sets,
+            "ranking_views": ranking_views,
+            "refresh_clicks": int(r["refresh_clicks"] or 0),
+            "session_ends": session_ends,
+            "visit_to_first_pop_rate": _rate(first_pops, visitors),
+            "first_pop_to_10_rate": _rate(pop_10s, first_pops),
+            "pop_10_to_name_set_rate": _rate(name_sets, pop_10s),
+            "visit_to_ranking_rate": _rate(ranking_views, visitors),
+            "return_visit_rate": _rate(return_visitors, visitors),
+            "median_first_pop_ms": None if r["median_first_pop_ms"] is None else int(r["median_first_pop_ms"]),
+            "median_name_set_ms": None if r["median_name_set_ms"] is None else int(r["median_name_set_ms"]),
+            "median_session_seconds": None if r["median_session_seconds"] is None else int(r["median_session_seconds"]),
+            "avg_session_pops": _rate(total_session_pops, session_ends),
+        })
+    return data
+
+
+@admin_router.get("/analytics/funnel")
+def analytics_funnel():
+    return {"days": _funnel_data()}
+
+
 # ---------------------------------------------------------------------------
 # 3) 유저별 요약
 # ---------------------------------------------------------------------------
@@ -543,6 +680,11 @@ _DASHBOARD_HTML = r"""
   <div class="cards" id="cards"></div>
 
   <div class="panel">
+    <h2>UX 퍼널</h2>
+    <div id="funnelWrap"></div>
+  </div>
+
+  <div class="panel">
     <h2>날짜별 추이</h2>
     <canvas id="dailyChart"></canvas>
   </div>
@@ -552,11 +694,12 @@ _DASHBOARD_HTML = r"""
     <div id="tableWrap"></div>
   </div>
 
-  <div class="foot">/analytics/daily · /analytics/users · /analytics/user/{user_id} 로 원본 JSON도 볼 수 있어요</div>
+  <div class="foot">/analytics/daily · /analytics/funnel · /analytics/users · /analytics/user/{user_id} 로 원본 JSON도 볼 수 있어요</div>
 
 <script>
   const DAILY = /*DAILY_JSON*/;
   const USERS = /*USERS_JSON*/;
+  const FUNNEL = /*FUNNEL_JSON*/;
 
   // 요약 카드
   const totalPlayers = USERS.length;
@@ -571,6 +714,28 @@ _DASHBOARD_HTML = r"""
   ];
   document.getElementById('cards').innerHTML = cards.map(c =>
     `<div class="card"><div class="n">${c[1]}</div><div class="l">${c[0]}</div></div>`).join('');
+
+  if (FUNNEL.length){
+    const latest = FUNNEL[FUNNEL.length - 1];
+    const pct = v => v == null ? '보류' : Math.round(v * 100) + '%';
+    const ms = v => v == null ? '-' : (v / 1000).toFixed(1) + '초';
+    const funnelCards = [
+      ['방문→첫 팝', pct(latest.visit_to_first_pop_rate), latest.first_pops + '/' + latest.visitors],
+      ['첫 팝→10팝', pct(latest.first_pop_to_10_rate), latest.pop_10s + '/' + latest.first_pops],
+      ['10팝→이름', pct(latest.pop_10_to_name_set_rate), latest.name_sets + '/' + latest.pop_10s],
+      ['랭킹 확인', pct(latest.visit_to_ranking_rate), latest.ranking_views + '/' + latest.visitors],
+      ['재방문', pct(latest.return_visit_rate), latest.return_visitors + '/' + latest.visitors],
+      ['첫 팝 중앙값', ms(latest.median_first_pop_ms), latest.date],
+    ];
+    document.getElementById('funnelWrap').innerHTML =
+      '<div class="cards">' + funnelCards.map(c =>
+        `<div class="card"><div class="n">${c[1]}</div><div class="l">${c[0]} · ${c[2]}</div></div>`).join('') + '</div>' +
+      `<table><thead><tr><th>날짜</th><th>방문</th><th>첫팝</th><th>10팝</th><th>이름</th><th>랭킹</th><th>새로고침</th><th>첫팝 중앙값</th><th>체류 중앙값</th></tr></thead><tbody>` +
+      FUNNEL.map(d => `<tr><td>${d.date}</td><td class="num">${d.visitors}</td><td class="num">${pct(d.visit_to_first_pop_rate)}</td><td class="num">${pct(d.first_pop_to_10_rate)}</td><td class="num">${pct(d.pop_10_to_name_set_rate)}</td><td class="num">${pct(d.visit_to_ranking_rate)}</td><td class="num">${d.refresh_clicks}</td><td class="num">${ms(d.median_first_pop_ms)}</td><td class="num">${d.median_session_seconds == null ? '-' : d.median_session_seconds + '초'}</td></tr>`).join('') +
+      '</tbody></table>';
+  } else {
+    document.getElementById('funnelWrap').innerHTML = '<div class="empty">퍼널 이벤트가 아직 없어요</div>';
+  }
 
   // 날짜별 차트
   if (DAILY.length){
@@ -632,9 +797,11 @@ _DASHBOARD_HTML = r"""
 def dashboard():
     daily = _daily_data()
     users = _users_data()
+    funnel = _funnel_data()
     html = (_DASHBOARD_HTML
             .replace("/*DAILY_JSON*/", json.dumps(daily, ensure_ascii=False))
-            .replace("/*USERS_JSON*/", json.dumps(users, ensure_ascii=False)))
+            .replace("/*USERS_JSON*/", json.dumps(users, ensure_ascii=False))
+            .replace("/*FUNNEL_JSON*/", json.dumps(funnel, ensure_ascii=False)))
     return HTMLResponse(html)
 
 # ============================ 분석 모듈 끝 ============================
