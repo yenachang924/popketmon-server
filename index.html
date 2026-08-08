@@ -336,6 +336,10 @@
   }
   let USER_ID = localStorage.getItem('popkemon_user_id');
   if(!USER_ID){ USER_ID = makeUserId(); localStorage.setItem('popkemon_user_id', USER_ID); }
+  const sessionStartedAt = Date.now();
+  const visitKey = 'popkemon_visit_logged';
+  const seenBefore = !!localStorage.getItem('popkemon_last_visit_at');
+  localStorage.setItem('popkemon_last_visit_at', String(sessionStartedAt));
 
   let count = 0;
   let playerName = localStorage.getItem('popkemon_name') || 'TRAINER';
@@ -351,6 +355,27 @@
 
   const milestones=[[10,'\u26A1'],[50,'\uD83D\uDD25'],[100,'\uD83D\uDC9C'],[500,'\uD83D\uDC7E'],[1000,'\uD83C\uDF1F'],[5000,'\uD83D\uDC51']];
   const getMilestone=n=>{let r='';for(const[t,e]of milestones)if(n>=t)r=e;return r;};
+
+  function sendEvent(event, data){
+    const body=JSON.stringify(Object.assign({user_id:USER_ID,event},data||{}));
+    try{
+      if(navigator.sendBeacon){
+        const blob=new Blob([body],{type:'application/json'});
+        if(navigator.sendBeacon(API+'/events',blob)) return;
+      }
+    }catch(e){}
+    fetch(API+'/events',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{});
+  }
+  function sendOnce(key,event,data){
+    if(localStorage.getItem(key)) return;
+    localStorage.setItem(key,'1');
+    sendEvent(event,data);
+  }
+  if(!sessionStorage.getItem(visitKey)){
+    sessionStorage.setItem(visitKey,'1');
+    sendEvent('first_visit');
+    if(seenBefore) sendEvent('return_visit');
+  }
 
   // 현재 count에 맞춰 충전 게이지/다음 목표/마일스톤을 다시 그린다 (점수 복원 시 사용)
   function applyGauge(){
@@ -372,6 +397,7 @@
   function setName(){
     const v=$('playerName').value.trim();
     if(v){playerName=v; localStorage.setItem('popkemon_name',v); showToast('NAME SET: '+v); fetchMyRank();
+      sendEvent('name_set',{elapsed_ms:Date.now()-sessionStartedAt,pop_count:count});
       gtag('event', 'set_name', { name_length: v.length });
     }
   }
@@ -440,15 +466,21 @@
         '</span><span class="rank-name">'+it.name+'</span><span class="rank-score">'+
         it.count.toLocaleString()+'</span></div>').join('');
       $('serverStatus').textContent=d.total_players+' TRAINERS ONLINE';
+      if(!sessionStorage.getItem('popkemon_ranking_view_logged')){
+        sessionStorage.setItem('popkemon_ranking_view_logged','1');
+        sendEvent('ranking_view',{elapsed_ms:Date.now()-sessionStartedAt,pop_count:count});
+      }
       syncDangerPhoto();
     }catch(e){ $('rankList').textContent='RUN server.py & REFRESH'; }
   }
-  $('refreshBtn').addEventListener('click',fetchRanking);
+  $('refreshBtn').addEventListener('click',()=>{sendEvent('refresh_click',{elapsed_ms:Date.now()-sessionStartedAt,pop_count:count}); fetchRanking();});
 
   function pop(x,y){
     count++;
     totalEl.textContent=count.toLocaleString();
     recentPops.push(Date.now());
+    sendOnce('popkemon_first_pop_logged','first_pop',{elapsed_ms:Date.now()-sessionStartedAt,pop_count:count});
+    if(count>=10) sendOnce('popkemon_pop_10_logged','pop_10',{elapsed_ms:Date.now()-sessionStartedAt,pop_count:count});
 
     // charge gauge
     const next=milestones.find(([t])=>t>count);
@@ -496,6 +528,14 @@
   document.addEventListener('gesturechange', e => e.preventDefault(), false);
   document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
   document.addEventListener('touchmove', e => { if (e.scale !== 1) e.preventDefault(); }, { passive: false });
+
+  function sendSessionEnd(){
+    if(sessionStorage.getItem('popkemon_session_end_logged')) return;
+    sessionStorage.setItem('popkemon_session_end_logged','1');
+    sendEvent('session_end',{duration_s:Math.round((Date.now()-sessionStartedAt)/1000),pop_count:count});
+  }
+  window.addEventListener('pagehide',sendSessionEnd);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') sendSessionEnd(); });
 
   // 경고 사진 높이를 랭킹 패널 상하폭에 맞춤 (비율은 CSS aspect-ratio가 유지)
   const dangerPhoto = document.querySelector('.danger-photo');
