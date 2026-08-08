@@ -27,6 +27,13 @@ class H1NamePromptTest(unittest.TestCase):
         self.assertNotIn('class="danger"', HTML)
         self.assertNotIn('해킹 즉시', HTML)
 
+    def test_visual_system_uses_simplified_neon_identity(self):
+        self.assertIn('<span class="t-ball"', HTML)
+        self.assertNotIn('clipPath id="ballClip"', HTML)
+        self.assertNotIn('#ffd700', HTML)
+        self.assertNotIn('#ffcf2e', HTML)
+        self.assertNotIn('var(--yellow)', HTML)
+
 
 if __name__ == "__main__":
     unittest.main()
