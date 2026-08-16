@@ -1,0 +1,11 @@
+{
+  "session_id": "test-block-main-commit",
+  "transcript_path": "",
+  "cwd": "__FIXTURE_FEATURE__",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "git commit -m \"test: 작업 브랜치에서 커밋 시도\"",
+    "description": "main이 아닌 브랜치에서의 커밋 시도 (통과해야 함)"
+  }
+}

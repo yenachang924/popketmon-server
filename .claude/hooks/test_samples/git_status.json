@@ -1,0 +1,11 @@
+{
+  "session_id": "test-block-main-commit",
+  "transcript_path": "",
+  "cwd": "__FIXTURE_MAIN__",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "git status",
+    "description": "커밋이 아닌 명령 (main에서도 통과해야 함)"
+  }
+}

@@ -13,3 +13,6 @@ venv/
 # 에디터
 .vscode/
 .idea/
+
+# 훅 실행 중 예외 로그 (로컬 전용)
+.claude/hooks/hook_errors.log

@@ -1,0 +1,11 @@
+{
+  "session_id": "test-block-main-commit",
+  "transcript_path": "",
+  "cwd": "__FIXTURE_MAIN__",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "git commit -m \"test: main에서 커밋 시도\"",
+    "description": "main 브랜치에서의 커밋 시도 (차단되어야 함)"
+  }
+}
